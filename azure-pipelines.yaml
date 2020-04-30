@@ -1,0 +1,20 @@
+trigger:
+  - master
+pr:
+  - master
+steps:
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: '0.12.20'
+  - task: TerraformCLI@0
+    inputs:
+      command: 'init'
+      commandOptions: '-backend=false'
+  - task: TerraformCLI@0
+    inputs:
+      command: 'validate'
+      commandOptions: '-no-color'
+  - task: TerraformCLI@0
+    inputs:
+      command: 'fmt'
+      commandOptions: '-check=true'
