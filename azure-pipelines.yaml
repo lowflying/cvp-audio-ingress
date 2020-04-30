@@ -4,17 +4,17 @@ pr:
   - master
 steps:
   - task: TerraformInstaller@0
+    displayName: Install Terraform
     inputs:
-      terraformVersion: '0.12.20'
+      terraformVersion: '0.12.24'
   - task: TerraformCLI@0
     inputs:
       command: 'init'
       commandOptions: '-backend=false'
   - task: TerraformCLI@0
+    displayName: Validate Terraform
     inputs:
       command: 'validate'
       commandOptions: '-no-color'
-  - task: TerraformCLI@0
-    inputs:
-      command: 'fmt'
-      commandOptions: '-check=true'
+  - script: terraform fmt -check=true
+    displayName: Check Formatting
