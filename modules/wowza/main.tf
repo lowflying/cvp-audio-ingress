@@ -299,6 +299,7 @@ data "template_file" "cloudconfig1" {
     restPassword       = md5("wowza:Wowza:${random_password.restPassword.result}")
     streamPassword     = md5("wowza:Wowza:${random_password.streamPassword.result}")
     containerName      = azurerm_storage_container.media_container_01.name
+    numApplications    = var.num_applications
   }
 }
 
@@ -312,6 +313,7 @@ data "template_file" "cloudconfig2" {
     restPassword       = md5("wowza:Wowza:${random_password.restPassword.result}")
     streamPassword     = md5("wowza:Wowza:${random_password.streamPassword.result}")
     containerName      = azurerm_storage_container.media_container_02.name
+    numApplications    = var.num_applications
   }
 }
 
@@ -400,113 +402,6 @@ resource "azurerm_linux_virtual_machine" "vm1" {
   }
 }
 
-//resource "null_resource" "cert1" {
-//
-//  depends_on = [
-//    azurerm_linux_virtual_machine.vm1
-//  ]
-//
-//  triggers = {
-//    vm = azurerm_linux_virtual_machine.vm1.id
-//  }
-//
-//  provisioner "file" {
-//    content = file("modules/wowza/wowza-applications/GandiStandardSSLCA2.pem")
-//    destination = "/home/wowza/GandiStandardSSLCA2.pem"
-//
-//    connection {
-//      type = "ssh"
-//      user = var.admin_user
-//      private_key = tls_private_key.tf_ssh_key.private_key_pem
-//      host = azurerm_public_ip.pip_vm1.ip_address
-//      port = "22"
-//      timeout = "1m"
-//    }
-//  }
-//
-//  provisioner "remote-exec" {
-//
-//    connection {
-//      type        = "ssh"
-//      user        = var.admin_user
-//      private_key = tls_private_key.tf_ssh_key.private_key_pem
-//      host        = azurerm_public_ip.pip_vm1.ip_address
-//      port        = "22"
-//      timeout     = "1m"
-//    }
-//
-//    inline = [
-//      "sudo chown root: /home/wowza/GandiStandardSSLCA2.pem",
-//      "sudo chmod 777 /home/wowza/GandiStandardSSLCA2.pem",
-//      "sudo cp -uv /home/wowza/GandiStandardSSLCA2.pem /etc/ssl/certs/GandiStandardSSLCA2.pem",
-//      "sudo cp /home/wowza/GandiStandardSSLCA2.pem /usr/local/share/ca-certificates/GandiStandardSSLCA2.pem",
-//      "sudo cp /home/wowza/GandiStandardSSLCA2.pem /usr/lib/ssl/certs/GandiStandardSSLCA2.pem",
-//      "sudo update-ca-certificates",
-//      "cd /etc/ssl/certs",
-//      "sudo c_rehash"
-//    ]
-//  }
-//}
-
-resource "null_resource" "wowza_applications1" {
-
-  depends_on = [
-    azurerm_linux_virtual_machine.vm1
-  ]
-
-  triggers = {
-    num_applications = var.num_applications
-    vm = azurerm_linux_virtual_machine.vm1.id
-  }
-
-  provisioner "file" {
-    content     = file("modules/wowza/wowza-applications/dir-creator.sh")
-    destination = "/home/wowza/dir-creator.sh"
-
-    connection {
-      type        = "ssh"
-      user        = var.admin_user
-      private_key = tls_private_key.tf_ssh_key.private_key_pem
-      host        = azurerm_public_ip.pip_vm1.ip_address
-      port        = "22"
-      timeout     = "1m"
-    }
-  }
-
-  provisioner "file" {
-    content     = file("modules/wowza/wowza-applications/Application.xml")
-    destination = "/home/wowza/Application.xml"
-
-    connection {
-      type        = "ssh"
-      user        = var.admin_user
-      private_key = tls_private_key.tf_ssh_key.private_key_pem
-      host        = azurerm_public_ip.pip_vm1.ip_address
-      port        = "22"
-      timeout     = "1m"
-    }
-  }
-
-  provisioner "remote-exec" {
-
-    connection {
-      type        = "ssh"
-      user        = var.admin_user
-      private_key = tls_private_key.tf_ssh_key.private_key_pem
-      host        = azurerm_public_ip.pip_vm1.ip_address
-      port        = "22"
-      timeout     = "1m"
-    }
-
-    inline = [
-      "chmod 775 ./dir-creator.sh",
-      "./dir-creator.sh ${var.num_applications}",
-      "sudo service WowzaStreamingEngine stop",
-      "sudo service WowzaStreamingEngine start"
-    ]
-  }
-}
-
 resource "azurerm_linux_virtual_machine" "vm2" {
   name = "${local.service_name}-vm2"
 
@@ -564,111 +459,5 @@ resource "azurerm_linux_virtual_machine" "vm2" {
 
   identity {
     type = "SystemAssigned"
-  }
-}
-
-//resource "null_resource" "cert2" {
-//
-//  depends_on = [
-//    azurerm_linux_virtual_machine.vm2
-//  ]
-//
-//  triggers = {
-//    vm = azurerm_linux_virtual_machine.vm2.id
-//  }
-//
-//  provisioner "file" {
-//    content = file("modules/wowza/wowza-applications/GandiStandardSSLCA2.pem")
-//    destination = "/home/wowza/GandiStandardSSLCA2.pem"
-//
-//    connection {
-//      type = "ssh"
-//      user = var.admin_user
-//      private_key = tls_private_key.tf_ssh_key.private_key_pem
-//      host = azurerm_public_ip.pip_vm2.ip_address
-//      port = "22"
-//      timeout = "1m"
-//    }
-//  }
-//
-//  provisioner "remote-exec" {
-//
-//    connection {
-//      type        = "ssh"
-//      user        = var.admin_user
-//      private_key = tls_private_key.tf_ssh_key.private_key_pem
-//      host        = azurerm_public_ip.pip_vm2.ip_address
-//      port        = "22"
-//      timeout     = "1m"
-//    }
-//
-//    inline = [
-//      "sudo chown root: /home/wowza/GandiStandardSSLCA2.pem",
-//      "sudo chmod 777 /home/wowza/GandiStandardSSLCA2.pem",
-//      "sudo cp -uv /home/wowza/GandiStandardSSLCA2.pem /etc/ssl/GandiStandardSSLCA2.pem",
-//      "sudo c_rehash",
-//      "sudo cp /home/wowza/GandiStandardSSLCA2.pem /usr/local/share/ca-certificates/GandiStandardSSLCA2.pem",
-//      "sudo cp /home/wowza/GandiStandardSSLCA2.pem /usr/lib/ssl/certs/GandiStandardSSLCA2.pem",
-//      "sudo update-ca-certificates"
-//    ]
-//  }
-//}
-
-resource "null_resource" "wowza_applications2" {
-
-  depends_on = [
-    azurerm_linux_virtual_machine.vm2
-  ]
-
-  triggers = {
-    num_applications = var.num_applications
-    vm = azurerm_linux_virtual_machine.vm2.id
-  }
-
-  provisioner "file" {
-    content     = file("modules/wowza/wowza-applications/dir-creator.sh")
-    destination = "/home/wowza/dir-creator.sh"
-
-    connection {
-      type        = "ssh"
-      user        = var.admin_user
-      private_key = tls_private_key.tf_ssh_key.private_key_pem
-      host        = azurerm_public_ip.pip_vm2.ip_address
-      port        = "22"
-      timeout     = "1m"
-    }
-  }
-
-  provisioner "file" {
-    content     = file("modules/wowza/wowza-applications/Application.xml")
-    destination = "/home/wowza/Application.xml"
-
-    connection {
-      type        = "ssh"
-      user        = var.admin_user
-      private_key = tls_private_key.tf_ssh_key.private_key_pem
-      host        = azurerm_public_ip.pip_vm2.ip_address
-      port        = "22"
-      timeout     = "1m"
-    }
-  }
-
-  provisioner "remote-exec" {
-
-    connection {
-      type        = "ssh"
-      user        = var.admin_user
-      private_key = tls_private_key.tf_ssh_key.private_key_pem
-      host        = azurerm_public_ip.pip_vm2.ip_address
-      port        = "22"
-      timeout     = "1m"
-    }
-
-    inline = [
-      "chmod 775 ./dir-creator.sh",
-      "./dir-creator.sh ${var.num_applications}",
-      "sudo service WowzaStreamingEngine stop",
-      "sudo service WowzaStreamingEngine start"
-    ]
   }
 }
