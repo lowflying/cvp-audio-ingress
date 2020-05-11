@@ -64,7 +64,11 @@ variable "service_certificate_kv_url" {
   type = string
 }
 
-variable "service_certificate_thumbprint" {
+variable "cert_path" {
+  type = string
+}
+
+variable "thumbprint" {
   type = string
 }
 
@@ -76,4 +80,9 @@ variable "cloud_init_file" {
   description = "The location of the cloud init configuration file."
   type        = string
   default     = "./cloudconfig.tpl"
+}
+
+variable "num_applications" {
+  type    = number
+  default = 0
 }

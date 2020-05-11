@@ -1,0 +1,83 @@
+parameters:
+  - name: subscriptionName
+    type: string
+  - name: env
+    type: string
+  - name: certName
+    type: string
+  - name: location
+    type: string
+  - name: product
+    type: string
+
+steps:
+  - task: AzurePowerShell@5
+    inputs:
+      azureSubscription: 'DTS-SHAREDSERVICES-SBOX'
+      ScriptType: 'InlineScript'
+      Inline: |
+        $Context = Get-AzContext
+        $AzureDevOpsServicePrincipal = Get-AzADServicePrincipal -ApplicationId $Context.Account.Id
+        $ObjectId = $AzureDevOpsServicePrincipal.Id
+
+        echo "##vso[task.setvariable variable=oid]$ObjectId"
+      azurePowerShellVersion: 'LatestVersion'
+      pwsh: true
+
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: '${{ parameters.subscriptionName}}'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+
+        # ensure KV exists in same sub we are working in
+        rgName="${{ parameters.product }}-sharedinfra-${{ parameters.env }}"
+        kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
+        oid=$(oid)
+        echo "Logged in as oid $oid"
+        az group create --location ${{ parameters.location }} --name ${{ parameters.product }}-sharedinfra-${{ parameters.env }}  --subscription ${{ parameters.subscriptionName }}
+        newKv=$(az keyvault create --location ${{ parameters.location }} --name $kvName --resource-group $rgName --subscription ${{ parameters.subscriptionName }} --enabled-for-deployment true --enabled-for-template-deployment true)
+        az keyvault set-policy --name $kvName \
+          --certificate-permissions backup create get import list listissuers recover restore update \
+          --secret-permissions backup delete get list recover restore set \
+          --object-id $oid
+
+        # echo "SECRETS ###########"
+        # az keyvault secret list --vault-name cftapps-${{ parameters.env }}
+        # echo "CERTS ###########"
+        # az keyvault certificate list --vault-name cftapps-${{ parameters.env }}
+
+        # copy the cert from ctfapps
+        az keyvault secret download --id https://cftapps-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
+
+        base64 -d cert.pfx > cert-up.pfx
+
+        # import cert
+        az keyvault certificate import --file cert-up.pfx --vault-name $kvName --name ${{ parameters.certName }} --verbose
+
+        az keyvault certificate download --id https://$kvName.vault.azure.net/certificates/${{ parameters.certName }} -f cert.pem
+        certPath=`pwd`/cert.pem
+
+        cert=$(az keyvault certificate show --id https://$kvName.vault.azure.net/certificates/${{ parameters.certName }})
+        thumbprint=$(echo $cert | jq .x509ThumbprintHex)
+        secretId=$(echo $cert | jq .sid)
+
+        kvId=$(echo $newKv | jq .id)
+
+        # check if the ssh keypair is there, else generate one
+        sshPrivKeyName="cvp-ssh-priv-key"
+        sshPrivKeyName="cvp-ssh-pub-key"
+
+        echo "##vso[task.setvariable variable=certPath]$certPath"
+        echo "##vso[task.setvariable variable=secretId]$secretId"
+        echo "##vso[task.setvariable variable=thumbprint]$thumbprint"
+        echo "##vso[task.setvariable variable=kvId]$kvId"
+
+  - task: TerraformCLI@0
+    displayName: Plan
+    inputs:
+      command: 'plan'
+      environmentServiceName: ${{ parameters.subscriptionName }}
+      commandOptions: '-var-file="${{ parameters.env}}.tfvars" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -out="${{ parameters.env }}.tfplan" -no-color -input=false'
+      # @todo move the tfvars file into pipeline vars and pass in here

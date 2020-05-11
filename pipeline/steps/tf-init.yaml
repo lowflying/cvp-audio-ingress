@@ -1,0 +1,28 @@
+parameters:
+  - name: subscriptionName
+    type: string
+  - name: product
+    type: string
+  - name: locationEng
+    type: string
+  - name: location
+    type: string
+  - name: env
+    type: string
+  - name: containerName
+    type: string
+    default: 'terraform-state'
+
+steps:
+
+  - task: TerraformCLI@0
+    inputs:
+      command: 'init'
+      backendType: 'azurerm'
+      backendServiceArm: '${{ parameters.subscriptionName }}'
+      ensureBackend: true
+      backendAzureRmResourceGroupName: "${{ parameters.product }}-sharedinfra-${{ parameters.env }}"
+      backendAzureRmResourceGroupLocation: ${{ parameters.location }}
+      backendAzureRmStorageAccountName: '${{ parameters.product }}${{ parameters.env }}terraform'
+      backendAzureRmContainerName: ${{ parameters.containerName }}
+      backendAzureRmKey: '${{ parameters.locationEng }}/${{ parameters.env }}/application/01-${{ parameters.product }}-audio-ingress/terraform.tfstate'

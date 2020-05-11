@@ -27,10 +27,6 @@ variable "service_certificate_kv_url" {
   type = string
 }
 
-variable "service_certificate_thumbprint" {
-  type = string
-}
-
 variable "key_vault_id" {
   type = string
 }
@@ -60,6 +56,14 @@ variable "dns_subscription_id" {
   type = string
 }
 
-variable "workspace_to_address_space_map" {
-  default = ""
+variable "address_space" {
+  type = string
+}
+
+variable "cert_path" {
+  type = string
+}
+
+variable "thumbprint" {
+  type = string
 }

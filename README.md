@@ -53,7 +53,6 @@ module "wowza" {
   service_name
   admin_ssh_key_path
   service_certificate_kv_url
-  service_certificate_thumbprint
   key_vault_id
   cloud_init_file
 }

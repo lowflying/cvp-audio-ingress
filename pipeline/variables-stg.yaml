@@ -1,0 +1,4 @@
+variables:
+  env: 'stg'
+  certName: 'wildcard-aat-platform-hmcts-net'
+  subscriptionName: 'DTS-SHAREDSERVICES-STG'

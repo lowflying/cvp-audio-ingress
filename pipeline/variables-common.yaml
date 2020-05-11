@@ -1,0 +1,8 @@
+variables:
+  locationEng: 'UK South' # add coalese
+  location: 'uksouth' # add coalese
+  wowza_sku: 'linux-paid'
+  wowza_version: '4.7.7'
+  wowza_publisher: 'wowza'
+  wowza_offer: 'wowzastreamingengine'
+  product: 'cvp'

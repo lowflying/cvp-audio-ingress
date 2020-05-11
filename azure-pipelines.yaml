@@ -2,19 +2,75 @@ trigger:
   - master
 pr:
   - master
-steps:
-  - task: TerraformInstaller@0
-    displayName: Install Terraform
-    inputs:
-      terraformVersion: '0.12.24'
-  - task: TerraformCLI@0
-    inputs:
-      command: 'init'
-      commandOptions: '-backend=false'
-  - task: TerraformCLI@0
-    displayName: Validate Terraform
-    inputs:
-      command: 'validate'
-      commandOptions: '-no-color'
-  - script: terraform fmt -check=true
-    displayName: Check Formatting
+parameters:
+  - name: env
+    displayName: Env
+    type: string
+    default: Choose
+    values:
+      - sbox
+      - stg
+      - prod
+
+variables:
+  - template: pipeline/variables-common.yaml
+  - ${{ if eq(parameters.env, 'sbox') }}:
+    # Only run when dev has specifically requested sandbox
+    - template: pipeline/variables-sbox.yaml
+#  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(parameters.env, 'sbox'), ne(parameters.env, 'test')) }}:
+  - ${{ if eq(parameters.env, 'stg') }}:
+    - template: pipeline/variables-stg.yaml
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/tags'), ne(parameters.env, 'sbox'), ne(parameters.env, 'test')) }}:
+    - template: pipeline/variables-prod.yaml
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BasicValidation
+        steps:
+          - template: pipeline/steps/tf-install.yaml
+          - task: TerraformCLI@0
+            inputs:
+              command: 'init'
+              commandOptions: '-backend=false'
+          - task: TerraformCLI@0
+            displayName: Validate Terraform
+            inputs:
+              command: 'validate'
+              commandOptions: '-no-color'
+          - script: terraform fmt -check=true
+            displayName: Check Formatting
+
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+      - job: DeployToEnv
+        steps:
+#          - task: AzureCLI@2
+#            inputs:
+#              azureSubscription: $(subscriptionName)
+#              scriptType: 'bash'
+#              scriptLocation: 'inlineScript'
+#              inlineScript: |
+#                az keyvault list-deleted
+#                az keyvault purge --name cvp-sbox-kv --location uksouth --subscription DTS-SHAREDSERVICES-SBOX
+
+          - template: pipeline/steps/tf-init.yaml
+            parameters:
+              subscriptionName: $(subscriptionName)
+              product: $(product)
+              locationEng: $(locationEng)
+              location: $(location)
+              env: $(env)
+
+          - template: pipeline/steps/tf-plan.yaml
+            parameters:
+              subscriptionName: $(subscriptionName)
+              env: $(env)
+              certName: $(certName)
+              location: $(location)
+              product: $(product)
+          - template: pipeline/steps/tf-apply.yaml
+            parameters:
+              subscriptionName: $(subscriptionName)
+              env: $(env)

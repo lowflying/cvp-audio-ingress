@@ -1,0 +1,4 @@
+variables:
+  env: 'prod'
+  certName: 'STAR-platform-hmcts-net'
+  subscriptionName: 'DTS-SHAREDSERVICES-PROD' # @todo Check this
