@@ -18,6 +18,10 @@ module "wowza" {
   num_applications           = local.num_applications
   cert_path                  = var.cert_path
   thumbprint                 = var.thumbprint
+  wowza_sku                  = var.wowza_sku
+  wowza_version              = var.wowza_version
+  wowza_publisher            = var.wowza_publisher
+  wowza_offer                = var.wowza_offer
 }
 
 resource "azurerm_dns_a_record" "wowza" {

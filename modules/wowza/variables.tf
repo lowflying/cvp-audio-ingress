@@ -86,3 +86,19 @@ variable "num_applications" {
   type    = number
   default = 0
 }
+
+variable "wowza_publisher" {
+  type = string
+}
+
+variable "wowza_offer" {
+  type = string
+}
+
+variable "wowza_version" {
+  type = string
+}
+
+variable "wowza_sku" {
+  type = string
+}

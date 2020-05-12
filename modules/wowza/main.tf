@@ -1,7 +1,5 @@
 locals {
   service_name  = "${var.product}-recordings-${var.env}"
-  wowza_sku     = "linux-paid"
-  wowza_version = "4.7.7"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -385,16 +383,16 @@ resource "azurerm_linux_virtual_machine" "vm1" {
   custom_data = data.template_cloudinit_config.wowza_setup1.rendered
 
   source_image_reference {
-    publisher = "wowza"
-    offer     = "wowzastreamingengine"
-    sku       = local.wowza_sku
-    version   = local.wowza_version
+    publisher = var.wowza_publisher
+    offer     = var.wowza_offer
+    sku       = var.wowza_sku
+    version   = var.wowza_version
   }
 
   plan {
-    name      = local.wowza_sku
-    product   = "wowzastreamingengine"
-    publisher = "wowza"
+    name      = var.wowza_sku
+    product   = var.wowza_offer
+    publisher = var.wowza_publisher
   }
 
   identity {
@@ -445,16 +443,16 @@ resource "azurerm_linux_virtual_machine" "vm2" {
   custom_data = data.template_cloudinit_config.wowza_setup2.rendered
 
   source_image_reference {
-    publisher = "wowza"
-    offer     = "wowzastreamingengine"
-    sku       = local.wowza_sku
-    version   = local.wowza_version
+    publisher = var.wowza_publisher
+    offer     = var.wowza_offer
+    sku       = var.wowza_sku
+    version   = var.wowza_version
   }
 
   plan {
-    name      = local.wowza_sku
-    product   = "wowzastreamingengine"
-    publisher = "wowza"
+    name      = var.wowza_sku
+    product   = var.wowza_offer
+    publisher = var.wowza_publisher
   }
 
   identity {

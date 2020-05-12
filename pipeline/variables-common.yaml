@@ -6,3 +6,4 @@ variables:
   wowza_publisher: 'wowza'
   wowza_offer: 'wowzastreamingengine'
   product: 'cvp'
+  builtFrom: 'https://github.com/hmcts/cvp-audio-ingress'
