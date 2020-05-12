@@ -67,3 +67,8 @@ variable "wowza_version" {
 variable "wowza_sku" {
   type = string
 }
+
+variable "num_applications" {
+  type    = number
+  default = 1
+}

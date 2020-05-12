@@ -1,8 +1,7 @@
 locals {
-  rg_name          = "${var.product}-media-service-${var.env}"
-  sa_name          = "${var.product}mediaservice${var.env}"
-  service_name     = "${var.product}mediaservice${var.env}"
-  num_applications = 9
+  rg_name      = "${var.product}-media-service-${var.env}"
+  sa_name      = "${var.product}mediaservice${var.env}"
+  service_name = "${var.product}mediaservice${var.env}"
 }
 
 module "wowza" {
@@ -15,7 +14,7 @@ module "wowza" {
   service_certificate_kv_url = var.service_certificate_kv_url
   key_vault_id               = var.key_vault_id
   address_space              = var.address_space
-  num_applications           = local.num_applications
+  num_applications           = var.num_applications
   cert_path                  = var.cert_path
   thumbprint                 = var.thumbprint
   wowza_sku                  = var.wowza_sku
