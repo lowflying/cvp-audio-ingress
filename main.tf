@@ -21,6 +21,7 @@ module "wowza" {
   wowza_version              = var.wowza_version
   wowza_publisher            = var.wowza_publisher
   wowza_offer                = var.wowza_offer
+  ssh_public_key             = var.ssh_public_key
 }
 
 resource "azurerm_dns_a_record" "wowza" {
@@ -30,5 +31,5 @@ resource "azurerm_dns_a_record" "wowza" {
   zone_name           = var.dns_zone_name
   resource_group_name = var.dns_resource_group
   ttl                 = 300
-  records             = [module.wowza.public_ip_address]
+  records             = [module.wowza.lb_pip]
 }

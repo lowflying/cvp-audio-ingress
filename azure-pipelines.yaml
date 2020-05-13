@@ -70,6 +70,7 @@ stages:
               certName: $(certName)
               location: $(location)
               product: $(product)
+
           - template: pipeline/steps/tf-apply.yaml
             parameters:
               subscriptionName: $(subscriptionName)

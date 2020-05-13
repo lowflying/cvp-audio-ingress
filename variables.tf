@@ -72,3 +72,7 @@ variable "num_applications" {
   type    = number
   default = 1
 }
+
+variable "ssh_public_key" {
+  type = string
+}

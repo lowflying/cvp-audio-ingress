@@ -45,6 +45,7 @@ resource "azurerm_subnet" "sn" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefix       = var.address_space
+  service_endpoints    = ["Microsoft.KeyVault"]
 
   enforce_private_link_endpoint_network_policies = true
 }
@@ -106,32 +107,12 @@ resource "azurerm_public_ip" "pip" {
   sku               = "Standard"
 }
 
-resource "azurerm_public_ip" "pip_vm1" {
-  name = "${local.service_name}-pipvm1"
-
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-
-  allocation_method = "Static"
-  sku               = "Standard"
-}
-
-resource "azurerm_public_ip" "pip_vm2" {
-  name = "${local.service_name}-pipvm2"
-
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-
-  allocation_method = "Static"
-  sku               = "Standard"
-}
-
 resource "azurerm_network_security_group" "sg" {
   name = "${local.service_name}-sg"
 
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  
+
   security_rule {
     name                       = "REST"
     priority                   = 1030
@@ -145,37 +126,13 @@ resource "azurerm_network_security_group" "sg" {
   }
 
   security_rule {
-    name                       = "AdminUI"
+    name                       = "RTMPS"
     priority                   = 1040
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "8088"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "HTTPS"
-    priority                   = 1050
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
     destination_port_range     = "443"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "SSH"
-    priority                   = 1060
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -191,7 +148,6 @@ resource "azurerm_network_interface" "nic1" {
     name                          = "wowzaConfiguration"
     subnet_id                     = azurerm_subnet.sn.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip_vm1.id
   }
 }
 
@@ -205,7 +161,6 @@ resource "azurerm_network_interface" "nic2" {
     name                          = "wowzaConfiguration"
     subnet_id                     = azurerm_subnet.sn.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip_vm2.id
   }
 }
 
@@ -254,6 +209,11 @@ resource "azurerm_network_interface_security_group_association" "sg_assoc1" {
 
 resource "azurerm_network_interface_security_group_association" "sg_assoc2" {
   network_interface_id      = azurerm_network_interface.nic2.id
+  network_security_group_id = azurerm_network_security_group.sg.id
+}
+
+resource "azurerm_subnet_network_security_group_association" "sg_assoc_subnet" {
+  subnet_id                 = azurerm_subnet.sn.id
   network_security_group_id = azurerm_network_security_group.sg.id
 }
 
@@ -335,11 +295,6 @@ data "template_cloudinit_config" "wowza_setup2" {
   }
 }
 
-resource "tls_private_key" "tf_ssh_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 resource "azurerm_linux_virtual_machine" "vm1" {
   name = "${local.service_name}-vm1"
 
@@ -359,12 +314,7 @@ resource "azurerm_linux_virtual_machine" "vm1" {
 
   admin_ssh_key {
     username   = var.admin_user
-    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc8ujPUBBo2fG8QrDHFHamZ6AOeTOVP7lmQ95hWufzAy03MbMufshkp2xkpBYrm9WQf9mDWqqDa5rBF7LoqJT7vRKuDbn04B/puwIHnVEVb9ROGXJ61tUURIsrQ5H4PtdluVrNpqJT/vFZBbat2ewrq8idXGGrHlcZovGpm0GOBvnDLAEfP3MXb5FqgWWikpsIMaJMF79fvw1W59uC5Wlo7HaKaAIk6Klp5EFM1TKDHj8I9cAc8XHilM3/JvjG2gCm4JMxMnIS7pRBISgSlZK16ALteaQTkO7OgkmaANqT2t1l64vCpxtRyccpvFnIKvseiRwXXFuLjFjy238b7eOU6Ktfb4RHaOIRvt/EEi9GXnrMSjEBgx5PKiCKuwFhpH6EL0I0B/CCb9h8k19ZA0FIGhH/ZHFJ2WdAIzKYbjXDCNHOejs4B+UUqcY6e/s9C4dLap+fCpXKRSwsRG0inRkttAcuyPu1ewtOE/qeSl5DN2fqKV6r0Gm4lQfdHUMTrcU="
-  }
-
-  admin_ssh_key {
-    username   = var.admin_user
-    public_key = tls_private_key.tf_ssh_key.public_key_openssh
+    public_key = var.ssh_public_key
   }
 
   os_disk {
@@ -419,12 +369,7 @@ resource "azurerm_linux_virtual_machine" "vm2" {
 
   admin_ssh_key {
     username   = var.admin_user
-    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc8ujPUBBo2fG8QrDHFHamZ6AOeTOVP7lmQ95hWufzAy03MbMufshkp2xkpBYrm9WQf9mDWqqDa5rBF7LoqJT7vRKuDbn04B/puwIHnVEVb9ROGXJ61tUURIsrQ5H4PtdluVrNpqJT/vFZBbat2ewrq8idXGGrHlcZovGpm0GOBvnDLAEfP3MXb5FqgWWikpsIMaJMF79fvw1W59uC5Wlo7HaKaAIk6Klp5EFM1TKDHj8I9cAc8XHilM3/JvjG2gCm4JMxMnIS7pRBISgSlZK16ALteaQTkO7OgkmaANqT2t1l64vCpxtRyccpvFnIKvseiRwXXFuLjFjy238b7eOU6Ktfb4RHaOIRvt/EEi9GXnrMSjEBgx5PKiCKuwFhpH6EL0I0B/CCb9h8k19ZA0FIGhH/ZHFJ2WdAIzKYbjXDCNHOejs4B+UUqcY6e/s9C4dLap+fCpXKRSwsRG0inRkttAcuyPu1ewtOE/qeSl5DN2fqKV6r0Gm4lQfdHUMTrcU="
-  }
-
-  admin_ssh_key {
-    username   = var.admin_user
-    public_key = tls_private_key.tf_ssh_key.public_key_openssh
+    public_key = var.ssh_public_key
   }
 
   os_disk {
