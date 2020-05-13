@@ -494,7 +494,7 @@ write_files:
                 -->
                         <Streams>
                                 <StreamType>live</StreamType>
-                                <StorageDir>$${com.wowza.wms.context.VHostConfigHome}/content</StorageDir>
+                                <StorageDir>$${com.wowza.wms.context.VHostConfigHome}/content/$${com.wowza.wms.context.Application}</StorageDir>
                                 <KeyDir>$${com.wowza.wms.context.VHostConfigHome}/keys</KeyDir>
                                 <!-- LiveStreamPacketizers (separate with commas): cupertinostreamingpacketizer, smoothstreamingpacketizer, sanjosestreamingpacketizer, mpegdashstreamingpacketizer, cupertinostreamingrepeater, smoothstreamingrepeater, sanjosestreamingrepeater, mpegdashstreamingrepeater, dvrstreamingpacketizer, dvrstreamingrepeater -->
                                 <LiveStreamPacketizers>cupertinostreamingpacketizer, mpegdashstreamingpacketizer, sanjosestreamingpacketizer, smoothstreamingpacketizer</LiveStreamPacketizers>
@@ -642,10 +642,15 @@ write_files:
                         </Repeater>
                         <StreamRecorder>
                                 <Properties>
+                                        <Property>
+                                                <Name>streamRecorderFileVersionTemplate</Name
+                                                <Value>$${SourceStreamName}_$${RecordingStartTime}</Value>
+                                                <Type>String</Type>
+                                        </Property>
                                 </Properties>
                         </StreamRecorder>
                         <Modules>
-                                <Module>
+                                <Module>Module
                                         <Name>base</Name>
                                         <Description>Base</Description>
                                         <Class>com.wowza.wms.module.ModuleCore</Class>
@@ -665,6 +670,11 @@ write_files:
                                         <Description>Core Security Module for Applications</Description>
                                         <Class>com.wowza.wms.security.ModuleCoreSecurity</Class>
                                 </Module>
+                                <Module>
+                                        <Name>ModuleMediaWriterFileMover</Name>
+                                        <Description>ModuleMediaWriterFileMover</Description>
+                                        <Class>com.wowza.wms.module.ModuleMediaWriterFileMover</Class>
+                                </Module>
                         </Modules>
                         <!-- Properties defined here will be added to the IApplication.getProperties() and IApplicationInstance.getProperties() collections -->
                         <Properties>
@@ -672,6 +682,25 @@ write_files:
                                         <Name>securityPublishRequirePassword</Name>
                                         <Value>true</Value>
                                         <Type>Boolean</Type>
+                                </Property>
+                                <Property>
+                                        <Name>fileMoverDestinationPath</Name>
+                                        <Value>$${com.wowza.wms.context.VHostConfigHome}/content/azurecopy</Value>
+                                </Property>
+                                <Property>
+                                        <Name>fileMoverDeleteOriginal</Name>
+                                        <Value>false</Value>
+                                        <Type>Boolean</Type>
+                                </Property>
+                                <Property>
+                                        <Name>fileMoverVersionFile</Name>
+                                        <Value>true</Value>
+                                        <Type>Boolean</Type>
+                                </Property>
+                                <Property>
+                                    <Name>fileMoverFileExtension</Name>
+                                    <Value>mp4</Value>
+                                    <Type>String</Type>
                                 </Property>
                         </Properties>
                 </Application>
@@ -730,6 +759,18 @@ write_files:
       done
 
       mkdir -p "$@"
+
+      targetDir="/usr/local/WowzaStreamingEngine/content/"
+      n=1
+      set -- # this sets $@ [the argv array] to an empty list.
+
+      while [ "$n" -le "$max" ]; do
+        set -- "$@" "$${targetDir}/$${prefix}$${n}$${suffix}"
+        n=$(( n + 1 ));
+      done
+
+      mkdir -p "$@"
+
       # Copy Applications.xml file
       cd /usr/local/WowzaStreamingEngine/conf/ || exit
       appDirs=$(ls -d $${prefix}*)
