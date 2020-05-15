@@ -561,12 +561,12 @@ write_files:
                         <RTP>
                                 <!-- RTP/Authentication/[type]Methods defined in Authentication.xml. Default setup includes; none, basic, digest -->
                                 <Authentication>
-                                        <PublishMethod>digestfile</PublishMethod>
+                                        <PublishMethod>block</PublishMethod>
                                         <PlayMethod>none</PlayMethod>
                                 </Authentication>
                                 <!-- RTP/AVSyncMethod. Valid values are: senderreport, systemclock, rtptimecode -->
                                 <AVSyncMethod>senderreport</AVSyncMethod>
-                                <MaxRTCPWaitTime>12000</MaxRTCPWaitTime>
+                                <MaxRTCPWaitTime>0</MaxRTCPWaitTime>
                                 <IdleFrequency>75</IdleFrequency>
                                 <RTSPSessionTimeout>90000</RTSPSessionTimeout>
                                 <RTSPMaximumPendingWriteBytes>0</RTSPMaximumPendingWriteBytes>
@@ -642,15 +642,30 @@ write_files:
                         </Repeater>
                         <StreamRecorder>
                                 <Properties>
-                                        <Property>
-                                                <Name>streamRecorderFileVersionTemplate</Name>
-                                                <Value>$${SourceStreamName}_$${RecordingStartTime}</Value>
-                                                <Type>String</Type>
-                                        </Property>
+                                    <Property>
+                                        <Name>streamRecorderFileVersionDelegate</Name>
+                                        <Value>LiveStreamRecordFileVersionDelegate</Value>
+                                        <Type>String</Type>
+                                    </Property>
+                                    <Property>
+                                        <Name>streamRecorderFileVersionTemplate</Name>
+                                        <Value>$${SourceStreamName}_$${RecordingStartTime}_$${SegmentNumber}</Value>
+                                        <Type>String</Type>
+                                    </Property>
+                                    <Property>
+                                        <Name>streamRecorderSegmentationType</Name>
+                                        <Value>duration</Value>
+                                        <Type>String</Type>
+                                    </Property>
+                                    <Property>
+                                        <Name>streamRecorderSegmentDuration</Name>
+                                        <Value>20000000</Value> <!-- milliseconds -->
+                                        <Type>long</Type>
+                                    </Property>
                                 </Properties>
                         </StreamRecorder>
                         <Modules>
-                                <Module>Module
+                                <Module>
                                         <Name>base</Name>
                                         <Description>Base</Description>
                                         <Class>com.wowza.wms.module.ModuleCore</Class>
@@ -675,21 +690,31 @@ write_files:
                                         <Description>ModuleMediaWriterFileMover</Description>
                                         <Class>com.wowza.wms.module.ModuleMediaWriterFileMover</Class>
                                 </Module>
+                                <Module>
+                                        <Name>ModuleAutoRecord</Name>
+                                        <Description>Auto-record streams that are published to this application instance.</Description>
+                                        <Class>com.wowza.wms.plugin.ModuleAutoRecord</Class>
+                                </Module>
                         </Modules>
                         <!-- Properties defined here will be added to the IApplication.getProperties() and IApplicationInstance.getProperties() collections -->
                         <Properties>
                                 <Property>
                                         <Name>securityPublishRequirePassword</Name>
+                                        <Value>false</Value>
+                                        <Type>Boolean</Type>
+                                </Property>
+                                <Property>
+                                        <Name>securityPublishBlockDuplicateStreamNames</Name>
                                         <Value>true</Value>
                                         <Type>Boolean</Type>
                                 </Property>
                                 <Property>
                                         <Name>fileMoverDestinationPath</Name>
-                                        <Value>$${com.wowza.wms.context.VHostConfigHome}/content/azurecopy</Value>
+                                        <Value>$${com.wowza.wms.context.VHostConfigHome}/content/azurecopy/$${com.wowza.wms.context.Application}</Value>
                                 </Property>
                                 <Property>
                                         <Name>fileMoverDeleteOriginal</Name>
-                                        <Value>false</Value>
+                                        <Value>true</Value>
                                         <Type>Boolean</Type>
                                 </Property>
                                 <Property>
@@ -697,14 +722,10 @@ write_files:
                                         <Value>true</Value>
                                         <Type>Boolean</Type>
                                 </Property>
-                                <Property>
-                                    <Name>fileMoverFileExtension</Name>
-                                    <Value>mp4</Value>
-                                    <Type>String</Type>
-                                </Property>
                         </Properties>
                 </Application>
         </Root>
+
   - owner: wowza:wowza
     permissions: 0775
     path: /home/wowza/dir-creator.sh
@@ -776,7 +797,9 @@ write_files:
       appDirs=$(ls -d $${prefix}*)
       echo "$${appDirs}" | xargs -n 1 cp -v -f /home/wowza/Application.xml
 
+
 runcmd:
+  - 'wget https://www.wowza.com/downloads/forums/collection/wse-plugin-autorecord.zip && unzip wse-plugin-autorecord.zip && mv lib/wse-plugin-autorecord.jar /usr/local/WowzaStreamingEngine/lib/ && chown wowza: /usr/local/WowzaStreamingEngine/lib/wse-plugin-autorecord.jar'
   - 'sudo mkdir /mnt/blobfusetmp'
   - 'sudo mkdir /usr/local/WowzaStreamingEngine/content/azurecopy'
   - 'secretsname=$(find /var/lib/waagent/ -name "${certThumbprint}.prv" | cut -c -57)'

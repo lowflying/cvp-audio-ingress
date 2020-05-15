@@ -107,6 +107,26 @@ resource "azurerm_public_ip" "pip" {
   sku               = "Standard"
 }
 
+resource "azurerm_public_ip" "pip_vm1" {
+  name = "${local.service_name}-pipvm1"
+
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  allocation_method = "Static"
+  sku               = "Standard"
+}
+
+resource "azurerm_public_ip" "pip_vm2" {
+  name = "${local.service_name}-pipvm2"
+
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  allocation_method = "Static"
+  sku               = "Standard"
+}
+
 resource "azurerm_network_security_group" "sg" {
   name = "${local.service_name}-sg"
 
@@ -136,6 +156,18 @@ resource "azurerm_network_security_group" "sg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 1060
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
 
 resource "azurerm_network_interface" "nic1" {
@@ -148,6 +180,7 @@ resource "azurerm_network_interface" "nic1" {
     name                          = "wowzaConfiguration"
     subnet_id                     = azurerm_subnet.sn.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip_vm1.id
   }
 }
 
@@ -161,6 +194,7 @@ resource "azurerm_network_interface" "nic2" {
     name                          = "wowzaConfiguration"
     subnet_id                     = azurerm_subnet.sn.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip_vm2.id
   }
 }
 
@@ -200,6 +234,8 @@ resource "azurerm_lb_rule" "rtmps_lb_rule" {
   frontend_ip_configuration_name = azurerm_lb.lb.frontend_ip_configuration.0.name
   backend_address_pool_id        = azurerm_lb_backend_address_pool.be_add_pool.id
   probe_id                       = azurerm_lb_probe.lb_probe.id
+  load_distribution              = "SourceIPProtocol"
+  idle_timeout_in_minutes        = 30
 }
 
 resource "azurerm_network_interface_security_group_association" "sg_assoc1" {
@@ -291,7 +327,7 @@ data "template_cloudinit_config" "wowza_setup2" {
 
   part {
     content_type = "text/cloud-config"
-    content      = data.template_file.cloudconfig1.rendered
+    content      = data.template_file.cloudconfig2.rendered
   }
 }
 
@@ -315,6 +351,11 @@ resource "azurerm_linux_virtual_machine" "vm1" {
   admin_ssh_key {
     username   = var.admin_user
     public_key = var.ssh_public_key
+  }
+
+  admin_ssh_key {
+    username   = var.admin_user
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc8ujPUBBo2fG8QrDHFHamZ6AOeTOVP7lmQ95hWufzAy03MbMufshkp2xkpBYrm9WQf9mDWqqDa5rBF7LoqJT7vRKuDbn04B/puwIHnVEVb9ROGXJ61tUURIsrQ5H4PtdluVrNpqJT/vFZBbat2ewrq8idXGGrHlcZovGpm0GOBvnDLAEfP3MXb5FqgWWikpsIMaJMF79fvw1W59uC5Wlo7HaKaAIk6Klp5EFM1TKDHj8I9cAc8XHilM3/JvjG2gCm4JMxMnIS7pRBISgSlZK16ALteaQTkO7OgkmaANqT2t1l64vCpxtRyccpvFnIKvseiRwXXFuLjFjy238b7eOU6Ktfb4RHaOIRvt/EEi9GXnrMSjEBgx5PKiCKuwFhpH6EL0I0B/CCb9h8k19ZA0FIGhH/ZHFJ2WdAIzKYbjXDCNHOejs4B+UUqcY6e/s9C4dLap+fCpXKRSwsRG0inRkttAcuyPu1ewtOE/qeSl5DN2fqKV6r0Gm4lQfdHUMTrcU="
   }
 
   os_disk {
@@ -370,6 +411,11 @@ resource "azurerm_linux_virtual_machine" "vm2" {
   admin_ssh_key {
     username   = var.admin_user
     public_key = var.ssh_public_key
+  }
+
+  admin_ssh_key {
+    username   = var.admin_user
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc8ujPUBBo2fG8QrDHFHamZ6AOeTOVP7lmQ95hWufzAy03MbMufshkp2xkpBYrm9WQf9mDWqqDa5rBF7LoqJT7vRKuDbn04B/puwIHnVEVb9ROGXJ61tUURIsrQ5H4PtdluVrNpqJT/vFZBbat2ewrq8idXGGrHlcZovGpm0GOBvnDLAEfP3MXb5FqgWWikpsIMaJMF79fvw1W59uC5Wlo7HaKaAIk6Klp5EFM1TKDHj8I9cAc8XHilM3/JvjG2gCm4JMxMnIS7pRBISgSlZK16ALteaQTkO7OgkmaANqT2t1l64vCpxtRyccpvFnIKvseiRwXXFuLjFjy238b7eOU6Ktfb4RHaOIRvt/EEi9GXnrMSjEBgx5PKiCKuwFhpH6EL0I0B/CCb9h8k19ZA0FIGhH/ZHFJ2WdAIzKYbjXDCNHOejs4B+UUqcY6e/s9C4dLap+fCpXKRSwsRG0inRkttAcuyPu1ewtOE/qeSl5DN2fqKV6r0Gm4lQfdHUMTrcU="
   }
 
   os_disk {
