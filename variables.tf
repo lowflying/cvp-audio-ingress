@@ -65,7 +65,8 @@ variable "wowza_version" {
 }
 
 variable "wowza_sku" {
-  type = string
+  type    = string
+  default = "linux-paid"
 }
 
 variable "num_applications" {
@@ -75,4 +76,23 @@ variable "num_applications" {
 
 variable "ssh_public_key" {
   type = string
+}
+
+variable "rtmps_source_address_prefixes" {
+  type = list(string)
+}
+
+variable "logging_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "ws_name" {
+  type    = string
+  default = "hmcts-prod"
+}
+
+variable "ws_rg" {
+  type    = string
+  default = "oms-automation"
 }

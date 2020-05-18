@@ -5,23 +5,24 @@ locals {
 }
 
 module "wowza" {
-  source                     = "./modules/wowza"
-  location                   = var.location
-  product                    = var.product
-  env                        = var.env
-  common_tags                = var.common_tags
-  admin_ssh_key_path         = var.admin_ssh_key_path
-  service_certificate_kv_url = var.service_certificate_kv_url
-  key_vault_id               = var.key_vault_id
-  address_space              = var.address_space
-  num_applications           = var.num_applications
-  cert_path                  = var.cert_path
-  thumbprint                 = var.thumbprint
-  wowza_sku                  = var.wowza_sku
-  wowza_version              = var.wowza_version
-  wowza_publisher            = var.wowza_publisher
-  wowza_offer                = var.wowza_offer
-  ssh_public_key             = var.ssh_public_key
+  source                        = "./modules/wowza"
+  location                      = var.location
+  product                       = var.product
+  env                           = var.env
+  common_tags                   = var.common_tags
+  admin_ssh_key_path            = var.admin_ssh_key_path
+  service_certificate_kv_url    = var.service_certificate_kv_url
+  key_vault_id                  = var.key_vault_id
+  address_space                 = var.address_space
+  num_applications              = var.num_applications
+  cert_path                     = var.cert_path
+  thumbprint                    = var.thumbprint
+  wowza_sku                     = var.wowza_sku
+  wowza_version                 = var.wowza_version
+  wowza_publisher               = var.wowza_publisher
+  wowza_offer                   = var.wowza_offer
+  ssh_public_key                = var.ssh_public_key
+  rtmps_source_address_prefixes = var.rtmps_source_address_prefixes
 }
 
 resource "azurerm_dns_a_record" "wowza" {

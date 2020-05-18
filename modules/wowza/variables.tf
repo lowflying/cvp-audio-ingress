@@ -106,3 +106,22 @@ variable "wowza_sku" {
 variable "ssh_public_key" {
   type = string
 }
+
+variable "rtmps_source_address_prefixes" {
+  type = list(string)
+}
+
+variable "logging_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "ws_name" {
+  type    = string
+  default = "hmcts-prod"
+}
+
+variable "ws_rg" {
+  type    = string
+  default = "oms-automation"
+}

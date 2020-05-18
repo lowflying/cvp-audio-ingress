@@ -6,3 +6,6 @@ variables:
   dns_resource_group: "shared-services_sbox_network_resource_group"
   address_space: "10.50.11.0/28"
   num_applications: 20
+  ws_name: 'cvp-sbox-ws'
+  ws_rg: 'cvp-recordings-sbox-rg'
+  logging_enabled: true

@@ -17,17 +17,22 @@ variables:
   - ${{ if eq(parameters.env, 'sbox') }}:
     # Only run when dev has specifically requested sandbox
     - template: pipeline/variables-sbox.yaml
+    - group: cvp-sbox
 #  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(parameters.env, 'sbox'), ne(parameters.env, 'test')) }}:
   - ${{ if eq(parameters.env, 'stg') }}:
     - template: pipeline/variables-stg.yaml
+    - group: cvp-stg
   - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/tags'), ne(parameters.env, 'sbox'), ne(parameters.env, 'test')) }}:
     - template: pipeline/variables-prod.yaml
+    - group: cvp-prod
 
 stages:
   - stage: Build
     jobs:
       - job: BasicValidation
         steps:
+          - script: |
+              echo $(rtmps_source_address_prefixes)
           - template: pipeline/steps/tf-install.yaml
           - task: TerraformCLI@0
             inputs:
