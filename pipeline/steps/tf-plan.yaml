@@ -41,50 +41,58 @@ steps:
         kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
         oid=$(oid)
         echo "Logged in as oid $oid"
-        az group create --location ${{ parameters.location }} --name ${{ parameters.product }}-sharedinfra-${{ parameters.env }}  --subscription ${{ parameters.subscriptionName }}
+
+        echo "Creating Shared RG $rgName"
+        az group create --location ${{ parameters.location }} --name $rgName  --subscription ${{ parameters.subscriptionName }}
+
+        echo "Creating Shared KV $kvName"
         newKv=$(az keyvault create --location ${{ parameters.location }} --name $kvName --resource-group $rgName --subscription ${{ parameters.subscriptionName }} --enabled-for-deployment true --enabled-for-template-deployment true)
+
+        echo "Grant Service connection permissions on the KV"
         az keyvault set-policy --name $kvName \
           --certificate-permissions backup create get import list listissuers recover restore update \
           --secret-permissions backup delete get list recover restore set \
           --object-id $oid
 
-        # white list this build agent
+        echo "Add build agent ip $agentIp to KV $kvName"
         agentIp=$(curl http://ifconfig.me/ip)/32
         az keyvault network-rule add \
           --resource-group $rgName \
           --name $kvName \
           --ip-address $agentIp
-        echo "Adding agent ip $agentIp to KV"
 
         # Whitelist the subnet the VMs are on (if they are there)
         subnetId=$(az network vnet subnet show --resource-group "cvp-recordings-${{ parameters.env }}-rg" --vnet-name "cvp-recordings-${{ parameters.env }}-vnet" --name "wowza" --query id --output tsv)
-        az keyvault network-rule add --resource-group $rgName --name $kvName --subnet $subnetId
         echo "Adding vm subnet ${subnetId} to KV"
+        az keyvault network-rule add --resource-group $rgName --name $kvName --subnet $subnetId
 
+        echo "Default Deny other traiffic apart form Azure Services"
         az keyvault update \
           --resource-group $rgName \
           --name $kvName \
           --bypass AzureServices \
           --default-action Deny
 
-        # copy the cert from ctfapps
+        echo "Copy wildcard cert from cftapps"
         az keyvault secret download --id https://cft-apps-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
 
         base64 -d cert.pfx > cert-up.pfx
 
-        # import cert
+        echo "Import the cert to our new KV $kvName"
         az keyvault certificate import --file cert-up.pfx --vault-name $kvName --name ${{ parameters.certName }} --verbose
 
+        echo "Download the cert as a pem file"
         az keyvault certificate download --id https://$kvName.vault.azure.net/certificates/${{ parameters.certName }} -f cert.pem
         certPath=`pwd`/cert.pem
 
+        echo "Capture cert thumbprint and secret resource id"
         cert=$(az keyvault certificate show --id https://$kvName.vault.azure.net/certificates/${{ parameters.certName }})
         thumbprint=$(echo $cert | jq .x509ThumbprintHex)
         secretId=$(echo $cert | jq .sid)
 
         kvId=$(echo $newKv | jq .id)
 
-        # check if the ssh keypair is there, else generate one
+        echo "Check if the ssh keypair is there, else generate one"
         sshPrivKeyName="cvp-ssh-priv-key"
         sshPubKeyName="cvp-ssh-pub-key"
 
@@ -95,22 +103,18 @@ steps:
         pubKey=$sshResult
 
         if [ "$sshResult" = "" ]; then
+          echo "Create new SSH keypair"
           ssh-keygen -f ./cvp -t rsa -b 4096 -q -N ""
           az keyvault secret set --name ${sshPrivKeyName} --vault-name ${kvName} --file ./cvp
           az keyvault secret set --name ${sshPubKeyName} --vault-name ${kvName} --file ./cvp.pub
           pubKey=`cat ./cvp.pub`
         fi
 
-        echo "pubKey = ${pubKey}"
-
         echo "##vso[task.setvariable variable=certPath]$certPath"
         echo "##vso[task.setvariable variable=secretId]$secretId"
         echo "##vso[task.setvariable variable=thumbprint]$thumbprint"
         echo "##vso[task.setvariable variable=kvId]$kvId"
         echo "##vso[task.setvariable variable=pubKey]$pubKey"
-
-        wsId=$(az monitor log-analytics workspace show --resource-group $(ws_rg) --workspace-name $(ws_name) --subscription $(ws_subscription) --query id -o tsv)
-        echo "##vso[task.setvariable variable=ws_id]$wsId"
 
   - task: AzureCLI@2
     condition: always()
@@ -134,4 +138,4 @@ steps:
     inputs:
       command: 'plan'
       environmentServiceName: ${{ parameters.subscriptionName }}
-      commandOptions: '-var "common_tags={\"environment\":\"${{ parameters.env }}\",\"teamName\":\"$(product)\",\"BuiltFrom\":\"$(builtFrom)\"}" -var "location=$(location)" -var "product=$(product)" -var "env=${{ parameters.env }}" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -var "wowza_sku=$(wowza_sku)" -var "wowza_version=$(wowza_version)" -var "wowza_publisher=$(wowza_publisher)" -var "wowza_offer=$(wowza_offer)" -var "dns_zone_name=$(dns_zone_name)" -var "dns_resource_group=$(dns_resource_group)" -var "address_space=$(address_space)" -var "num_applications=$(num_applications)" -var "ssh_public_key=$(pubKey)" -var "logging_enabled=$(logging_enabled)" -var "rtmps_source_address_prefixes=[$(rtmps_source_address_prefixes)]" -var "ws_id=$(ws_id)" -var "ws_key=$(ws_key)" -out="${{ parameters.env }}.tfplan" -no-color -input=false'
+      commandOptions: '-var "common_tags={\"environment\":\"${{ parameters.env }}\",\"teamName\":\"$(product)\",\"BuiltFrom\":\"$(builtFrom)\"}" -var "location=$(location)" -var "product=$(product)" -var "env=${{ parameters.env }}" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -var "wowza_sku=$(wowza_sku)" -var "wowza_version=$(wowza_version)" -var "wowza_publisher=$(wowza_publisher)" -var "wowza_offer=$(wowza_offer)" -var "dns_zone_name=$(dns_zone_name)" -var "dns_resource_group=$(dns_resource_group)" -var "address_space=$(address_space)" -var "num_applications=$(num_applications)" -var "ssh_public_key=$(pubKey)" -var "logging_enabled=$(logging_enabled)" -var "rtmps_source_address_prefixes=[$(rtmps_source_address_prefixes)]" -out="${{ parameters.env }}.tfplan" -no-color -input=false'
