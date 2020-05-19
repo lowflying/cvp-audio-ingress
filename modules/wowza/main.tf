@@ -144,7 +144,6 @@ resource "azurerm_network_security_group" "sg" {
     source_address_prefixes    = var.rtmps_source_address_prefixes
     destination_address_prefix = "*"
   }
-
 }
 
 resource "azurerm_network_interface" "nic1" {
@@ -418,314 +417,50 @@ resource "azurerm_linux_virtual_machine" "vm2" {
   }
 }
 
-data "azurerm_log_analytics_workspace" "workspace" {
-  count               = var.logging_enabled ? 1 : 0
+data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = var.ws_name
   resource_group_name = var.ws_rg
+  provider            = azurerm.secops
 }
 
-resource "azurerm_monitor_diagnostic_setting" "lb_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-lb-diag"
-  target_resource_id = azurerm_lb.lb.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
+resource "azurerm_virtual_machine_extension" "log_analytics_vm1" {
+  name                 = "${local.service_name}-vm1-ext"
+  virtual_machine_id   = azurerm_linux_virtual_machine.vm1.id
+  publisher            = "Microsoft.EnterpriseCloud.Monitoring"
+  type                 = "OmsAgentForLinux"
+  type_handler_version = "1.7"
 
-  log {
-    category = "LoadBalancerAlertEvent"
-    retention_policy {
-      enabled = true
-      days    = 90
+  settings = <<SETTINGS
+    {
+        "workspaceId": "${data.azurerm_log_analytics_workspace.log_analytics.workspace_id}"
     }
-  }
+SETTINGS
 
-  log {
-    category = "LoadBalancerProbeHealthStatus"
-    retention_policy {
-      enabled = true
-      days    = 90
+  protected_settings = <<PROTECTEDSETTINGS
+    {
+        "workspaceKey": "${data.azurerm_log_analytics_workspace.log_analytics.primary_shared_key}"
     }
-  }
+PROTECTEDSETTINGS
+
 }
 
-resource "azurerm_monitor_diagnostic_setting" "nic1_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-nic1-diag"
-  target_resource_id = azurerm_network_interface.nic1.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
+resource "azurerm_virtual_machine_extension" "log_analytics_vm2" {
+  name                 = "${local.service_name}-vm2-ext"
+  virtual_machine_id   = azurerm_linux_virtual_machine.vm2.id
+  publisher            = "Microsoft.EnterpriseCloud.Monitoring"
+  type                 = "OmsAgentForLinux"
+  type_handler_version = "1.7"
 
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
+  settings = <<SETTINGS
+    {
+        "workspaceId": "${data.azurerm_log_analytics_workspace.log_analytics.workspace_id}"
     }
-  }
-}
+SETTINGS
 
-resource "azurerm_monitor_diagnostic_setting" "nic2_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-nic2-diag"
-  target_resource_id = azurerm_network_interface.nic2.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
+  protected_settings = <<PROTECTEDSETTINGS
+    {
+        "workspaceKey": "${data.azurerm_log_analytics_workspace.log_analytics.primary_shared_key}"
     }
-  }
-}
+PROTECTEDSETTINGS
 
-resource "azurerm_monitor_diagnostic_setting" "private_endpoint_diagnostic_settings" {
-  count = var.logging_enabled ? 1 : 0
-  name = "${local.service_name}-nic2-diag"
-  target_resource_id = azurerm_private_endpoint.endpoint.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days = 90
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "sg_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-sg-diag"
-  target_resource_id = azurerm_network_security_group.sg.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "NetworkSecurityGroupEvent"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  log {
-    category = "NetworkSecurityGroupRuleCounter"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "pip_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-pip-diag"
-  target_resource_id = azurerm_public_ip.pip.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "DDoSProtectionNotifications"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  log {
-    category = "DDoSMitigationFlowLogs"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  log {
-    category = "DDoSMitigationReports"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "pip1_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-pip1-diag"
-  target_resource_id = azurerm_public_ip.pip_vm1.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "DDoSProtectionNotifications"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  log {
-    category = "DDoSMitigationFlowLogs"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  log {
-    category = "DDoSMitigationReports"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "pip2_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-pip2-diag"
-  target_resource_id = azurerm_public_ip.pip_vm2.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "DDoSProtectionNotifications"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  log {
-    category = "DDoSMitigationFlowLogs"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  log {
-    category = "DDoSMitigationReports"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "sa_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-sa-diag"
-  target_resource_id = azurerm_storage_account.sa.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "AuditEvent"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "vm1_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-vm1-diag"
-  target_resource_id = azurerm_linux_virtual_machine.vm1.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "AuditEvent"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "vm2_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-vm2-diag"
-  target_resource_id = azurerm_linux_virtual_machine.vm2.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "AuditEvent"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-}
-
-data "azurerm_key_vault" "cvp-kv" {
-  count               = var.logging_enabled ? 1 : 0
-  name                = "cvp-${var.env}-kv"
-  resource_group_name = "cvp-sharedinfra-${var.env}"
-}
-
-resource "azurerm_monitor_diagnostic_setting" "kv_diagnostic_settings" {
-  count              = var.logging_enabled ? 1 : 0
-  name               = "${local.service_name}-kv-diag"
-  target_resource_id = data.azurerm_key_vault.cvp-kv.0.id
-  storage_account_id = data.azurerm_log_analytics_workspace.workspace.0.id
-
-  log {
-    category = "AuditEvent"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
-  }
 }

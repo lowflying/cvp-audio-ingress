@@ -31,6 +31,11 @@ steps:
       scriptLocation: 'inlineScript'
       inlineScript: |
 
+        # echo "SECRETS ###########"
+        # az keyvault secret list --vault-name cft-apps-${{ parameters.env }}
+        # echo "CERTS ###########"
+        # az keyvault certificate list --vault-name cft-apps-${{ parameters.env }}
+
         # ensure KV exists in same sub we are working in
         rgName="${{ parameters.product }}-sharedinfra-${{ parameters.env }}"
         kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
@@ -62,13 +67,8 @@ steps:
           --bypass AzureServices \
           --default-action Deny
 
-        # echo "SECRETS ###########"
-        # az keyvault secret list --vault-name cftapps-${{ parameters.env }}
-        # echo "CERTS ###########"
-        # az keyvault certificate list --vault-name cftapps-${{ parameters.env }}
-
         # copy the cert from ctfapps
-        az keyvault secret download --id https://cftapps-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
+        az keyvault secret download --id https://cft-apps-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
 
         base64 -d cert.pfx > cert-up.pfx
 
@@ -109,6 +109,9 @@ steps:
         echo "##vso[task.setvariable variable=kvId]$kvId"
         echo "##vso[task.setvariable variable=pubKey]$pubKey"
 
+        wsId=$(az monitor log-analytics workspace show --resource-group $(ws_rg) --workspace-name $(ws_name) --subscription $(ws_subscription) --query id -o tsv)
+        echo "##vso[task.setvariable variable=ws_id]$wsId"
+
   - task: AzureCLI@2
     condition: always()
     displayName: Remove Build Agent IP from KV whitelist
@@ -131,4 +134,4 @@ steps:
     inputs:
       command: 'plan'
       environmentServiceName: ${{ parameters.subscriptionName }}
-      commandOptions: '-var "common_tags={\"environment\":\"${{ parameters.env }}\",\"teamName\":\"$(product)\",\"BuiltFrom\":\"$(builtFrom)\"}" -var "location=$(location)" -var "product=$(product)" -var "env=${{ parameters.env }}" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -var "wowza_sku=$(wowza_sku)" -var "wowza_version=$(wowza_version)" -var "wowza_publisher=$(wowza_publisher)" -var "wowza_offer=$(wowza_offer)" -var "dns_zone_name=$(dns_zone_name)" -var "dns_resource_group=$(dns_resource_group)" -var "address_space=$(address_space)" -var "num_applications=$(num_applications)" -var "ssh_public_key=$(pubKey)" -var "logging_enabled=$(logging_enabled)" -var "rtmps_source_address_prefixes=[$(rtmps_source_address_prefixes)]" -out="${{ parameters.env }}.tfplan" -no-color -input=false'
+      commandOptions: '-var "common_tags={\"environment\":\"${{ parameters.env }}\",\"teamName\":\"$(product)\",\"BuiltFrom\":\"$(builtFrom)\"}" -var "location=$(location)" -var "product=$(product)" -var "env=${{ parameters.env }}" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -var "wowza_sku=$(wowza_sku)" -var "wowza_version=$(wowza_version)" -var "wowza_publisher=$(wowza_publisher)" -var "wowza_offer=$(wowza_offer)" -var "dns_zone_name=$(dns_zone_name)" -var "dns_resource_group=$(dns_resource_group)" -var "address_space=$(address_space)" -var "num_applications=$(num_applications)" -var "ssh_public_key=$(pubKey)" -var "logging_enabled=$(logging_enabled)" -var "rtmps_source_address_prefixes=[$(rtmps_source_address_prefixes)]" -var "ws_id=$(ws_id)" -var "ws_key=$(ws_key)" -out="${{ parameters.env }}.tfplan" -no-color -input=false'

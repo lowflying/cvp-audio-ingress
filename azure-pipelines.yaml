@@ -15,14 +15,15 @@ parameters:
 variables:
   - template: pipeline/variables-common.yaml
   - ${{ if eq(parameters.env, 'sbox') }}:
-    # Only run when dev has specifically requested sandbox
+    # Sandbox (sbox)
     - template: pipeline/variables-sbox.yaml
     - group: cvp-sbox
-#  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(parameters.env, 'sbox'), ne(parameters.env, 'test')) }}:
   - ${{ if eq(parameters.env, 'stg') }}:
+    # Staging (stg)
     - template: pipeline/variables-stg.yaml
     - group: cvp-stg
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(parameters.env, 'sbox'), ne(parameters.env, 'test')) }}:
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(parameters.env, 'prod')) }}:
+    # Production (prod)
     - template: pipeline/variables-prod.yaml
     - group: cvp-prod
 
@@ -31,8 +32,6 @@ stages:
     jobs:
       - job: BasicValidation
         steps:
-          - script: |
-              echo $(rtmps_source_address_prefixes)
           - template: pipeline/steps/tf-install.yaml
           - task: TerraformCLI@0
             inputs:
@@ -51,14 +50,6 @@ stages:
     jobs:
       - job: DeployToEnv
         steps:
-#          - task: AzureCLI@2
-#            inputs:
-#              azureSubscription: $(subscriptionName)
-#              scriptType: 'bash'
-#              scriptLocation: 'inlineScript'
-#              inlineScript: |
-#                az keyvault list-deleted
-#                az keyvault purge --name cvp-sbox-kv --location uksouth --subscription DTS-SHAREDSERVICES-SBOX
 
           - template: pipeline/steps/tf-init.yaml
             parameters:

@@ -23,6 +23,8 @@ module "wowza" {
   wowza_offer                   = var.wowza_offer
   ssh_public_key                = var.ssh_public_key
   rtmps_source_address_prefixes = var.rtmps_source_address_prefixes
+  ws_id                         = var.ws_id
+  ws_key                        = var.ws_key
 }
 
 resource "azurerm_dns_a_record" "wowza" {
