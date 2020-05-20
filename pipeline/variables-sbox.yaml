@@ -9,4 +9,3 @@ variables:
   ws_name: 'hmcts-sandbox'
   ws_rg: 'oms-automation'
   ws_sub_name: 'DCD-CFT-Sandbox'
-  logging_enabled: true

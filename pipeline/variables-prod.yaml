@@ -6,7 +6,6 @@ variables:
   dns_resource_group: 'shared-services_prod_network_resource_group'
   address_space: '10.50.11.48/28'
   num_applications: 2000
-  logging_enabled: true
   ws_name: 'hmcts-prod'
   ws_rg: 'oms-automation'
   ws_sub_name: 'DCD-CNP-Prod'

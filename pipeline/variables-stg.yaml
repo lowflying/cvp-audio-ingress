@@ -9,4 +9,3 @@ variables:
   ws_name: 'hmcts-nonprod'
   ws_rg: 'oms-automation'
   ws_sub_name: 'DCD-CNP-DEV'
-  logging_enabled: false
