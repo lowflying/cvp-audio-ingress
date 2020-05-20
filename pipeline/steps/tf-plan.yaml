@@ -32,9 +32,9 @@ steps:
       inlineScript: |
 
         # echo "SECRETS ###########"
-        # az keyvault secret list --vault-name cft-apps-${{ parameters.env }}
+        # az keyvault secret list --vault-name $(kv_name_prefix)-${{ parameters.env }}
         # echo "CERTS ###########"
-        # az keyvault certificate list --vault-name cft-apps-${{ parameters.env }}
+        # az keyvault certificate list --vault-name $(kv_name_prefix)-${{ parameters.env }}
 
         # ensure KV exists in same sub we are working in
         rgName="${{ parameters.product }}-sharedinfra-${{ parameters.env }}"
@@ -74,7 +74,7 @@ steps:
           --default-action Deny
 
         echo "Copy wildcard cert from cftapps"
-        az keyvault secret download --id https://cft-apps-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
+        az keyvault secret download --id https://$(kv_name_prefix)-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
 
         base64 -d cert.pfx > cert-up.pfx
 
