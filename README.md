@@ -16,17 +16,30 @@ The project can be deployed to the following 3 environments:
 * Shared Services Production
 
 ## Testing
-The following command streams a single
+Before starting testing, make sure the client IP(s) for the machines you are testing from is added to the 
+`rtmps_source_address_prefixes` variable. This can be found in a variable group in Azure DevOps called `cvp-<env>`.
+
+### Functional tests
+
+1. Check that port 443 is responding with a valid SSL cert by opening the endpoint in your browser. 
+
+2. The following command streams a single file to Wowza and should get persisted to a folder in Azure Blob Storage called 
+audiostream5.
 ```shell script
-ffmpeg -re -i ./<local audio file> -c copy -f flv "rtmps://<host name for your wowza engine instance or the lb>:443/audiostream5 flashver=FMLE/3.0\20(compatible;\20FMSc/1.0) live=true pubUser=wowza playpath=<target filename>"
+ffmpeg -re -i ./<local audio file> -c copy -f flv "rtmps://<host name for your wowza engine instance or the lb>:443/audiostream1 flashver=FMLE/3.0\20(compatible;\20FMSc/1.0) live=true pubUser=wowza playpath=<target filename>"
 ``` 
 
-Load testing can be conducted on a Windows VM on Azure (Standard DS11 v2). It will require dotnet core installing on it.
+3. Load testing can be conducted on a Windows VM on Azure (Standard DS11 v2). It will require dotnet core installing on it.
 Once installed you can download, build and run from this project: 
 [https://github.com/hmcts/vh-performance-wowza](https://github.com/hmcts/vh-performance-wowza)
 
-
+### End to End testing
+You will require your own Virtual Meetin Room from Kinly to test with. The Staging environment should be used for testing 
+and has their Dev environment IPs whitelisted already.
 
 ## Known issues
 * The Wowza Engine Management UI doesn't seem to work when the Wowza Engine is configured with TLS (which this project 
 is).
+* Occasionally cloud-init will not complete properly. The quickest solution seems to be to just trigger the VM to be 
+rebuilt (changing the contents of the cloud init script will do this - even a linebreak).
+* 
