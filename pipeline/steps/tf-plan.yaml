@@ -133,9 +133,21 @@ steps:
           --name $kvName \
           --ip-address $agentIp
 
+  - task: AzureCLI@2
+    displayName: Get Log Analytics Workspace Subscription ID by name
+    inputs:
+      azureSubscription: '${{ parameters.subscriptionName}}'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        subscriptionId=$(az account show -s $(ws_sub_name) --query id -o tsv)
+
+        echo "$(ws_sub_name) == ${subscriptionId}"
+        echo "##vso[task.setvariable variable=ws_sub_id]$subscriptionId"
+
   - task: TerraformCLI@0
     displayName: Plan
     inputs:
       command: 'plan'
       environmentServiceName: ${{ parameters.subscriptionName }}
-      commandOptions: '-var "common_tags={\"environment\":\"${{ parameters.env }}\",\"teamName\":\"$(product)\",\"BuiltFrom\":\"$(builtFrom)\"}" -var "location=$(location)" -var "product=$(product)" -var "env=${{ parameters.env }}" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -var "wowza_sku=$(wowza_sku)" -var "wowza_version=$(wowza_version)" -var "wowza_publisher=$(wowza_publisher)" -var "wowza_offer=$(wowza_offer)" -var "dns_zone_name=$(dns_zone_name)" -var "dns_resource_group=$(dns_resource_group)" -var "address_space=$(address_space)" -var "num_applications=$(num_applications)" -var "ssh_public_key=$(pubKey)" -var "logging_enabled=$(logging_enabled)" -var "rtmps_source_address_prefixes=[$(rtmps_source_address_prefixes)]" -out="${{ parameters.env }}.tfplan" -no-color -input=false'
+      commandOptions: '-var "common_tags={\"environment\":\"${{ parameters.env }}\",\"teamName\":\"$(product)\",\"BuiltFrom\":\"$(builtFrom)\"}" -var "location=$(location)" -var "product=$(product)" -var "env=${{ parameters.env }}" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -var "wowza_sku=$(wowza_sku)" -var "wowza_version=$(wowza_version)" -var "wowza_publisher=$(wowza_publisher)" -var "wowza_offer=$(wowza_offer)" -var "dns_zone_name=$(dns_zone_name)" -var "dns_resource_group=$(dns_resource_group)" -var "address_space=$(address_space)" -var "num_applications=$(num_applications)" -var "ssh_public_key=$(pubKey)" -var "logging_enabled=$(logging_enabled)" -var "rtmps_source_address_prefixes=[$(rtmps_source_address_prefixes)]" -var "ws_name=$(ws_name)" -var "ws_rg=$(ws_rg)" -var "ws_sub_id=$(ws_sub_id)" -out="${{ parameters.env }}.tfplan" -no-color -input=false'

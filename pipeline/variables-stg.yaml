@@ -6,4 +6,7 @@ variables:
   dns_resource_group: 'shared-services_stg_network_resource_group'
   address_space: '10.50.11.32/28'
   num_applications: 2000
+  ws_name: 'hmcts-nonprod'
+  ws_rg: 'oms-automation'
+  ws_sub_name: 'DCD-CNP-DEV'
   logging_enabled: false

@@ -6,6 +6,7 @@ variables:
   dns_resource_group: "shared-services_sbox_network_resource_group"
   address_space: "10.50.11.0/28"
   num_applications: 20
-  ws_name: 'cvp-sbox-ws'
-  ws_rg: 'cvp-recordings-sbox-rg'
+  ws_name: 'hmcts-sandbox'
+  ws_rg: 'oms-automation'
+  ws_sub_name: 'DCD-CFT-Sandbox'
   logging_enabled: true

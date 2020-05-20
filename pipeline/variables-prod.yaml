@@ -9,4 +9,4 @@ variables:
   logging_enabled: true
   ws_name: 'hmcts-prod'
   ws_rg: 'oms-automation'
-  ws_subscription: 'DCD-CNP-Prod'
+  ws_sub_name: 'DCD-CNP-Prod'
