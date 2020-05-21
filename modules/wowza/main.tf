@@ -144,6 +144,18 @@ resource "azurerm_network_security_group" "sg" {
     source_address_prefixes    = var.rtmps_source_address_prefixes
     destination_address_prefix = "*"
   }
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 1050
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
 
 resource "azurerm_network_interface" "nic1" {
@@ -210,7 +222,7 @@ resource "azurerm_lb_rule" "rtmps_lb_rule" {
   frontend_ip_configuration_name = azurerm_lb.lb.frontend_ip_configuration.0.name
   backend_address_pool_id        = azurerm_lb_backend_address_pool.be_add_pool.id
   probe_id                       = azurerm_lb_probe.lb_probe.id
-  load_distribution              = "SourceIPProtocol"
+  load_distribution              = "Default"
   idle_timeout_in_minutes        = 30
 }
 
@@ -329,6 +341,11 @@ resource "azurerm_linux_virtual_machine" "vm1" {
     public_key = var.ssh_public_key
   }
 
+  admin_ssh_key {
+    username   = var.admin_user
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc8ujPUBBo2fG8QrDHFHamZ6AOeTOVP7lmQ95hWufzAy03MbMufshkp2xkpBYrm9WQf9mDWqqDa5rBF7LoqJT7vRKuDbn04B/puwIHnVEVb9ROGXJ61tUURIsrQ5H4PtdluVrNpqJT/vFZBbat2ewrq8idXGGrHlcZovGpm0GOBvnDLAEfP3MXb5FqgWWikpsIMaJMF79fvw1W59uC5Wlo7HaKaAIk6Klp5EFM1TKDHj8I9cAc8XHilM3/JvjG2gCm4JMxMnIS7pRBISgSlZK16ALteaQTkO7OgkmaANqT2t1l64vCpxtRyccpvFnIKvseiRwXXFuLjFjy238b7eOU6Ktfb4RHaOIRvt/EEi9GXnrMSjEBgx5PKiCKuwFhpH6EL0I0B/CCb9h8k19ZA0FIGhH/ZHFJ2WdAIzKYbjXDCNHOejs4B+UUqcY6e/s9C4dLap+fCpXKRSwsRG0inRkttAcuyPu1ewtOE/qeSl5DN2fqKV6r0Gm4lQfdHUMTrcU="
+  }
+
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = var.os_disk_type
@@ -382,6 +399,11 @@ resource "azurerm_linux_virtual_machine" "vm2" {
   admin_ssh_key {
     username   = var.admin_user
     public_key = var.ssh_public_key
+  }
+
+  admin_ssh_key {
+    username   = var.admin_user
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc8ujPUBBo2fG8QrDHFHamZ6AOeTOVP7lmQ95hWufzAy03MbMufshkp2xkpBYrm9WQf9mDWqqDa5rBF7LoqJT7vRKuDbn04B/puwIHnVEVb9ROGXJ61tUURIsrQ5H4PtdluVrNpqJT/vFZBbat2ewrq8idXGGrHlcZovGpm0GOBvnDLAEfP3MXb5FqgWWikpsIMaJMF79fvw1W59uC5Wlo7HaKaAIk6Klp5EFM1TKDHj8I9cAc8XHilM3/JvjG2gCm4JMxMnIS7pRBISgSlZK16ALteaQTkO7OgkmaANqT2t1l64vCpxtRyccpvFnIKvseiRwXXFuLjFjy238b7eOU6Ktfb4RHaOIRvt/EEi9GXnrMSjEBgx5PKiCKuwFhpH6EL0I0B/CCb9h8k19ZA0FIGhH/ZHFJ2WdAIzKYbjXDCNHOejs4B+UUqcY6e/s9C4dLap+fCpXKRSwsRG0inRkttAcuyPu1ewtOE/qeSl5DN2fqKV6r0Gm4lQfdHUMTrcU="
   }
 
   os_disk {
