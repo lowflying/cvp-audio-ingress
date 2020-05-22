@@ -121,5 +121,5 @@ variable "ws_rg" {
 }
 
 variable "ws_sub_id" {
-  type = "string"
+  type = string
 }
