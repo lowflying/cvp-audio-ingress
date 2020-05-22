@@ -649,7 +649,7 @@ write_files:
                                     </Property>
                                     <Property>
                                         <Name>streamRecorderFileVersionTemplate</Name>
-                                        <Value>$${SourceStreamName}_$${RecordingStartTime}_$${SegmentNumber}</Value>
+                                        <Value>$${SourceStreamName}_$${RecordingStartTime}</Value>
                                         <Type>String</Type>
                                     </Property>
                                     <Property>
