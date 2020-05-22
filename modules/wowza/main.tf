@@ -20,12 +20,20 @@ resource "azurerm_storage_account" "sa" {
   enable_https_traffic_only = true
 }
 
+resource "azurerm_storage_container" "media_container" {
+  name                  = "recordings"
+  storage_account_name  = azurerm_storage_account.sa.name
+  container_access_type = "private"
+}
+
+// Keep this resource until all recordings have been migrated to `recordings` container
 resource "azurerm_storage_container" "media_container_01" {
   name                  = "recordings01"
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
 }
 
+// Keep this resource until all recordings have been migrated to `recordings` container
 resource "azurerm_storage_container" "media_container_02" {
   name                  = "recordings02"
   storage_account_name  = azurerm_storage_account.sa.name
@@ -271,7 +279,7 @@ resource "random_password" "streamPassword" {
   override_special = "_%*"
 }
 
-data "template_file" "cloudconfig1" {
+data "template_file" "cloudconfig" {
   template = file(var.cloud_init_file)
   vars = {
     certPassword       = random_password.certPassword.result
@@ -280,42 +288,18 @@ data "template_file" "cloudconfig1" {
     storageAccountKey  = azurerm_storage_account.sa.primary_access_key
     restPassword       = md5("wowza:Wowza:${random_password.restPassword.result}")
     streamPassword     = md5("wowza:Wowza:${random_password.streamPassword.result}")
-    containerName      = azurerm_storage_container.media_container_01.name
+    containerName      = azurerm_storage_container.media_container.name
     numApplications    = var.num_applications
   }
 }
 
-data "template_file" "cloudconfig2" {
-  template = file(var.cloud_init_file)
-  vars = {
-    certPassword       = random_password.certPassword.result
-    certThumbprint     = var.thumbprint
-    storageAccountName = azurerm_storage_account.sa.name
-    storageAccountKey  = azurerm_storage_account.sa.primary_access_key
-    restPassword       = md5("wowza:Wowza:${random_password.restPassword.result}")
-    streamPassword     = md5("wowza:Wowza:${random_password.streamPassword.result}")
-    containerName      = azurerm_storage_container.media_container_02.name
-    numApplications    = var.num_applications
-  }
-}
-
-data "template_cloudinit_config" "wowza_setup1" {
+data "template_cloudinit_config" "wowza_setup" {
   gzip          = true
   base64_encode = true
 
   part {
     content_type = "text/cloud-config"
-    content      = data.template_file.cloudconfig2.rendered
-  }
-}
-
-data "template_cloudinit_config" "wowza_setup2" {
-  gzip          = true
-  base64_encode = true
-
-  part {
-    content_type = "text/cloud-config"
-    content      = data.template_file.cloudconfig2.rendered
+    content      = data.template_file.cloudconfig.rendered
   }
 }
 
@@ -359,7 +343,7 @@ resource "azurerm_linux_virtual_machine" "vm1" {
     key_vault_id = var.key_vault_id
   }
 
-  custom_data = data.template_cloudinit_config.wowza_setup1.rendered
+  custom_data = data.template_cloudinit_config.wowza_setup.rendered
 
   source_image_reference {
     publisher = var.wowza_publisher
@@ -419,7 +403,7 @@ resource "azurerm_linux_virtual_machine" "vm2" {
     key_vault_id = var.key_vault_id
   }
 
-  custom_data = data.template_cloudinit_config.wowza_setup2.rendered
+  custom_data = data.template_cloudinit_config.wowza_setup.rendered
 
   source_image_reference {
     publisher = var.wowza_publisher

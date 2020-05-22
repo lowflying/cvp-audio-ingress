@@ -21,7 +21,7 @@ Before starting testing, make sure the client IP(s) for the machines you are tes
 
 ### Functional tests
 
-1. Check that port 443 is responding with a valid SSL cert by opening the endpoint in your browser. 
+1. Check that port 443 is responding with a valid SSL cert by opening the endpoint in your browser. (Smoke test candidate)
 
 2. The following command streams a single file to Wowza and should get persisted to a folder in Azure Blob Storage called 
 audiostream5.
@@ -40,6 +40,4 @@ and has their Dev environment IPs whitelisted already.
 ## Known issues
 * The Wowza Engine Management UI doesn't seem to work when the Wowza Engine is configured with TLS (which this project 
 is).
-* Occasionally cloud-init will not complete properly. The quickest solution seems to be to just trigger the VM to be 
-rebuilt (changing the contents of the cloud init script will do this - even a linebreak).
-* 
+* Occasionally cloud-init will not complete properly. The quickest solution seems to be to reboot the VM to trigger cloud-init to run again.
