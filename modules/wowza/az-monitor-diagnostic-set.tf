@@ -23,7 +23,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-kv-diag-set" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set2" {
-  name               = "cvp-vm1-${var.env}-diag-set"
+  name               = "cvp-vm1-${var.env}-diag-set2"
   target_resource_id = azurerm_linux_virtual_machine.vm1.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
@@ -34,7 +34,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set2" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set2" {
-  name               = "cvp-vm2-${var.env}-diag-set"
+  name               = "cvp-vm2-${var.env}-diag-set2"
   target_resource_id = azurerm_linux_virtual_machine.vm2.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
@@ -45,7 +45,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set2" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set2" {
-  name               = "cvp-sa-${var.env}-diag-set"
+  name               = "cvp-sa-${var.env}-diag-set2"
   target_resource_id = azurerm_storage_account.sa.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
