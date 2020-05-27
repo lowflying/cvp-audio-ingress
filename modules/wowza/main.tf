@@ -316,6 +316,7 @@ resource "azurerm_linux_virtual_machine" "vm1" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = var.os_disk_type
+    disk_size_gb         = 64
   }
 
   provision_vm_agent = true
@@ -371,6 +372,7 @@ resource "azurerm_linux_virtual_machine" "vm2" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = var.os_disk_type
+    disk_size_gb         = 64
   }
 
   provision_vm_agent = true
