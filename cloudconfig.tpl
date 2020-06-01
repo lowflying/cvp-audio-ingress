@@ -539,8 +539,6 @@ write_files:
                                 <Properties>
                                 </Properties>
                         </TimedText>
-                        <!-- HTTPStreamers (separate with commas): cupertinostreaming, smoothstreaming, sanjosestreaming, mpegdashstreaming, dvrchunkstreaming -->
-                        <HTTPStreamers>cupertinostreaming, smoothstreaming, sanjosestreaming, mpegdashstreaming</HTTPStreamers>
                         <MediaCache>
                                 <MediaCacheSourceList></MediaCacheSourceList>
                         </MediaCache>
