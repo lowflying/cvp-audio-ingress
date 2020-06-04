@@ -125,23 +125,6 @@ write_files:
               </Server>
       </Root>
   - owner: wowza:wowza
-    path: /usr/local/WowzaStreamingEngine/conf/Tune.xml
-    content: |
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Root>
-            <Tune>
-                <HeapSize>${com.wowza.wms.TuningHeapSizeProduction}</HeapSize>
-                <GarbageCollector>-XX:+UseConcMarkSweepGC -XX:NewSize=512m</GarbageCollector>
-                <VMOptions>
-                        <VMOption>-server</VMOption>
-                        <VMOption>-Djava.net.preferIPv4Stack=true</VMOption>
-                        <!-- <VMOption>-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="${com.wowza.wms.AppHome}/logs"</VMOption> -->
-                        <!-- <VMOption>-Duser.language=en -Duser.country=US -Dfile.encoding=Cp1252</VMOption> -->
-                        <!-- <VMOption>-verbose:gc -Xloggc:"${com.wowza.wms.AppHome}/logs/gc_${com.wowza.wms.StartupDateTime}.log" -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime</VMOption> -->
-                </VMOptions>
-            </Tune>
-      </Root>
-  - owner: wowza:wowza
     path: /usr/local/WowzaStreamingEngine/conf/VHost.xml
     content: |
       <?xml version="1.0" encoding="UTF-8"?>
