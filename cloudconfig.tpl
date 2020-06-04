@@ -130,30 +130,8 @@ write_files:
       <?xml version="1.0" encoding="UTF-8"?>
       <Root>
             <Tune>
-                <!--
-                        HeapSize
-
-                        ${com.wowza.wms.TuningHeapSizeProduction} - Assumes Wowza Streaming Engine is only application running on server
-                        ${com.wowza.wms.TuningHeapSizeDevelopment} - Assumes Wowza Streaming Engine is sharing resources with other applications
-
-                        or specify heap size directly (ex: <HeapSize>8000M</HeapSize>)
-                -->
                 <HeapSize>${com.wowza.wms.TuningHeapSizeProduction}</HeapSize>
-                <!--
-                        GarbageCollector
-
-                        ${com.wowza.wms.TuningGarbageCollectorConcurrentDefault} - Concurrent Collector
-                        ${com.wowza.wms.TuningGarbageCollectorG1Default} - G1 (Garbage First) Collector (recommended)
-
-                        or specify custom GC settings directly (ex: <GarbageCollector>-XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:NewSize=512m</GarbageCollector>)
-                -->
                 <GarbageCollector>-XX:+UseConcMarkSweepGC -XX:NewSize=512m</GarbageCollector>
-                <!--
-                        VM Options - other VM startup options
-
-                        ${com.wowza.wms.AppHome} - Application home directory
-                        ${com.wowza.wms.StartupDateTime} - Date and time the server was started
-                -->
                 <VMOptions>
                         <VMOption>-server</VMOption>
                         <VMOption>-Djava.net.preferIPv4Stack=true</VMOption>
