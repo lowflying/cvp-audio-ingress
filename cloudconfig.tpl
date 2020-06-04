@@ -125,6 +125,20 @@ write_files:
               </Server>
       </Root>
   - owner: wowza:wowza
+    path: /usr/local/WowzaStreamingEngine/conf/Tune.xml
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Root>
+            <Tune>
+                <HeapSize>$${com.wowza.wms.TuningHeapSizeProduction}</HeapSize>
+                <GarbageCollector>-XX:+UseConcMarkSweepGC -XX:NewSize=512m</GarbageCollector>
+                <VMOptions>
+                        <VMOption>-server</VMOption>
+                        <VMOption>-Djava.net.preferIPv4Stack=true</VMOption>
+                </VMOptions>
+            </Tune>
+      </Root>
+  - owner: wowza:wowza
     path: /usr/local/WowzaStreamingEngine/conf/VHost.xml
     content: |
       <?xml version="1.0" encoding="UTF-8"?>
