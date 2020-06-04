@@ -100,10 +100,10 @@ write_files:
                               -->
                       </VHostListeners>
                       <HandlerThreadPool>
-                              <PoolSize>$${com.wowza.wms.TuningAuto}</PoolSize>
+                              <PoolSize>1024</PoolSize>
                       </HandlerThreadPool>
                       <TransportThreadPool>
-                              <PoolSize>$${com.wowza.wms.TuningAuto}</PoolSize>
+                              <PoolSize>1024</PoolSize>
                       </TransportThreadPool>
                       <RTP>
                               <DatagramStartingPort>6970</DatagramStartingPort>
@@ -174,7 +174,7 @@ write_files:
                               <HostPort>
                                       <Name>Default SSL Streaming</Name>
                                       <Type>Streaming</Type>
-                                      <ProcessorCount>$${com.wowza.wms.TuningAuto}</ProcessorCount>
+                                      <ProcessorCount>256</ProcessorCount>
                                       <IpAddress>*</IpAddress>
                                       <Port>443</Port>
                                       <HTTPIdent2Response></HTTPIdent2Response>
