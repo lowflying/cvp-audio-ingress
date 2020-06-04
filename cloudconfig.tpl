@@ -125,6 +125,45 @@ write_files:
               </Server>
       </Root>
   - owner: wowza:wowza
+    path: /usr/local/WowzaStreamingEngine/conf/Tune.xml
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Root>
+            <Tune>
+                <!--
+                        HeapSize
+
+                        ${com.wowza.wms.TuningHeapSizeProduction} - Assumes Wowza Streaming Engine is only application running on server
+                        ${com.wowza.wms.TuningHeapSizeDevelopment} - Assumes Wowza Streaming Engine is sharing resources with other applications
+
+                        or specify heap size directly (ex: <HeapSize>8000M</HeapSize>)
+                -->
+                <HeapSize>${com.wowza.wms.TuningHeapSizeProduction}</HeapSize>
+                <!--
+                        GarbageCollector
+
+                        ${com.wowza.wms.TuningGarbageCollectorConcurrentDefault} - Concurrent Collector
+                        ${com.wowza.wms.TuningGarbageCollectorG1Default} - G1 (Garbage First) Collector (recommended)
+
+                        or specify custom GC settings directly (ex: <GarbageCollector>-XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:NewSize=512m</GarbageCollector>)
+                -->
+                <GarbageCollector>-XX:+UseConcMarkSweepGC -XX:NewSize=512m</GarbageCollector>
+                <!--
+                        VM Options - other VM startup options
+
+                        ${com.wowza.wms.AppHome} - Application home directory
+                        ${com.wowza.wms.StartupDateTime} - Date and time the server was started
+                -->
+                <VMOptions>
+                        <VMOption>-server</VMOption>
+                        <VMOption>-Djava.net.preferIPv4Stack=true</VMOption>
+                        <!-- <VMOption>-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="${com.wowza.wms.AppHome}/logs"</VMOption> -->
+                        <!-- <VMOption>-Duser.language=en -Duser.country=US -Dfile.encoding=Cp1252</VMOption> -->
+                        <!-- <VMOption>-verbose:gc -Xloggc:"${com.wowza.wms.AppHome}/logs/gc_${com.wowza.wms.StartupDateTime}.log" -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime</VMOption> -->
+                </VMOptions>
+            </Tune>
+      </Root>
+  - owner: wowza:wowza
     path: /usr/local/WowzaStreamingEngine/conf/VHost.xml
     content: |
       <?xml version="1.0" encoding="UTF-8"?>
@@ -152,13 +191,13 @@ write_files:
                                       </SSLConfig>
                                       <SocketConfiguration>
                                               <ReuseAddress>true</ReuseAddress>
-                                              <ReceiveBufferSize>65000</ReceiveBufferSize>
+                                              <ReceiveBufferSize>0</ReceiveBufferSize>
                                               <ReadBufferSize>65000</ReadBufferSize>
-                                              <SendBufferSize>65000</SendBufferSize>
+                                              <SendBufferSize>0</SendBufferSize>
                                               <KeepAlive>true</KeepAlive>
                                               <AcceptorBackLog>100</AcceptorBackLog>
                                       </SocketConfiguration>
-                                      <HTTPStreamerAdapterIDs>cupertinostreaming,smoothstreaming,sanjosestreaming,dvrchunkstreaming,mpegdashstreaming</HTTPStreamerAdapterIDs>
+                                      <HTTPStreamerAdapterIDs></HTTPStreamerAdapterIDs>
                                       <HTTPProviders>
                                               <HTTPProvider>
                                                       <BaseClass>com.wowza.wms.http.HTTPCrossdomain</BaseClass>
@@ -243,48 +282,6 @@ write_files:
                               </HostPort>
                       </HostPortList>
                       <HTTPStreamerAdapters>
-                              <HTTPStreamerAdapter>
-                                      <ID>smoothstreaming</ID>
-                                      <Name>smoothstreaming</Name>
-                                      <Properties>
-                                      </Properties>
-                              </HTTPStreamerAdapter>
-                              <HTTPStreamerAdapter>
-                                      <ID>cupertinostreaming</ID>
-                                      <Name>cupertinostreaming</Name>
-                                      <Properties>
-                                      </Properties>
-                              </HTTPStreamerAdapter>
-                              <HTTPStreamerAdapter>
-                                      <ID>sanjosestreaming</ID>
-                                      <Name>sanjosestreaming</Name>
-                                      <Properties>
-                                      </Properties>
-                              </HTTPStreamerAdapter>
-                              <HTTPStreamerAdapter>
-                                      <ID>dvrchunkstreaming</ID>
-                                      <Name>dvrchunkstreaming</Name>
-                                      <Properties>
-                                      </Properties>
-                              </HTTPStreamerAdapter>
-                              <HTTPStreamerAdapter>
-                                      <ID>mpegdashstreaming</ID>
-                                      <Name>mpegdashstreaming</Name>
-                                      <Properties>
-                                      </Properties>
-                              </HTTPStreamerAdapter>
-                              <HTTPStreamerAdapter>
-                                      <ID>tsstreaming</ID>
-                                      <Name>tsstreaming</Name>
-                                      <Properties>
-                                      </Properties>
-                              </HTTPStreamerAdapter>
-                              <HTTPStreamerAdapter>
-                                      <ID>webmstreaming</ID>
-                                      <Name>webmstreaming</Name>
-                                      <Properties>
-                                      </Properties>
-                              </HTTPStreamerAdapter>
                       </HTTPStreamerAdapters>
                       <!-- When set to zero, thread pool configuration is done in Server.xml -->
                       <HandlerThreadPool>
@@ -303,9 +300,9 @@ write_files:
                               <IdleFrequency>250</IdleFrequency>
                               <SocketConfiguration>
                                       <ReuseAddress>true</ReuseAddress>
-                                      <ReceiveBufferSize>65000</ReceiveBufferSize>
+                                      <ReceiveBufferSize>0</ReceiveBufferSize>
                                       <ReadBufferSize>65000</ReadBufferSize>
-                                      <SendBufferSize>65000</SendBufferSize>
+                                      <SendBufferSize>0</SendBufferSize>
                                       <KeepAlive>true</KeepAlive>
                                       <!-- <TrafficClass>0</TrafficClass> -->
                                       <!-- <OobInline>false</OobInline> -->
