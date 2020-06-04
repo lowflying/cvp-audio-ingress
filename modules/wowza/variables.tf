@@ -42,7 +42,7 @@ variable "address_space" {
 
 variable "vm_size" {
   type    = string
-  default = "Standard_F8s_v2"
+  default = "Standard_F16s_v2"
 }
 
 variable "admin_user" {
