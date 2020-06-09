@@ -1,6 +1,6 @@
 #cloud-config
 apt_sources:
-  - source: "deb [arch=amd64 trusted=yes] https://packages.microsoft.com/ubuntu/18.04/prod bionic main"
+  - source: "deb [arch=amd64 trusted=yes] https://packages.microsoft.com/ubuntu/14.04/prod trusty main"
 package_upgrade: true
 packages:
   - blobfuse
