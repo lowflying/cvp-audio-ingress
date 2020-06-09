@@ -469,7 +469,7 @@ write_files:
                                 <StorageDir>$${com.wowza.wms.context.VHostConfigHome}/content/$${com.wowza.wms.context.Application}</StorageDir>
                                 <KeyDir>$${com.wowza.wms.context.VHostConfigHome}/keys</KeyDir>
                                 <!-- LiveStreamPacketizers (separate with commas): cupertinostreamingpacketizer, smoothstreamingpacketizer, sanjosestreamingpacketizer, mpegdashstreamingpacketizer, cupertinostreamingrepeater, smoothstreamingrepeater, sanjosestreamingrepeater, mpegdashstreamingrepeater, dvrstreamingpacketizer, dvrstreamingrepeater -->
-                                <LiveStreamPacketizers>cupertinostreamingpacketizer, mpegdashstreamingpacketizer, sanjosestreamingpacketizer, smoothstreamingpacketizer</LiveStreamPacketizers>
+                                <LiveStreamPacketizers></LiveStreamPacketizers>
                                 <!-- Properties defined here will override any properties defined in conf/Streams.xml for any streams types loaded by this application -->
                                 <Properties>
                                 </Properties>
@@ -632,6 +632,11 @@ write_files:
                                         <Value>20000000</Value> <!-- milliseconds -->
                                         <Type>long</Type>
                                     </Property>
+                                    <Property>
+					<Name>streamRecorderStartOnKeyFrame</Name>
+					<Value>true</Value>
+					<Type>Boolean</Type>
+				    </Property>
                                 </Properties>
                         </StreamRecorder>
                         <Modules>
