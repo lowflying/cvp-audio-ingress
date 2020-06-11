@@ -632,11 +632,6 @@ write_files:
                                         <Value>20000000</Value> <!-- milliseconds -->
                                         <Type>long</Type>
                                     </Property>
-                                    <Property>
-					<Name>streamRecorderStartOnKeyFrame</Name>
-					<Value>true</Value>
-					<Type>Boolean</Type>
-				    </Property>
                                 </Properties>
                         </StreamRecorder>
                         <Modules>
