@@ -62,7 +62,7 @@ variable "os_disk_type" {
 
 variable "os_disk_size" {
   type    = number
-  default = 1000
+  default = 1024
 }
 
 variable "service_certificate_kv_url" {
