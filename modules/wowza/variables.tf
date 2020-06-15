@@ -60,6 +60,11 @@ variable "os_disk_type" {
   default = "Premium_LRS"
 }
 
+variable "os_disk_size" {
+  type    = number
+  default = 1000
+}
+
 variable "service_certificate_kv_url" {
   type = string
 }
