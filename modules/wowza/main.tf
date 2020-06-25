@@ -450,3 +450,37 @@ SETTINGS
 PROTECTEDSETTINGS
 
 }
+
+resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
+  name                 = "${local.service_name}-vm1-ext"
+  virtual_machine_id   = azurerm_linux_virtual_machine.vm1.id
+  publisher            = "dynatrace.ruxit"
+  type                 = "oneAgentLinux"
+  type_handler_version = "1.7"
+
+  settings = <<SETTINGS
+    {
+        "tenantId": "${data.TenantKvVariableGoesHere}"
+        "token": "${data.DynatraceTokenKvVariableGoesHere}"
+        "enableLogAnalytics": "yes"
+    }
+SETTINGS
+
+}
+
+resource "azurerm_virtual_machine_extension" "dynatrace_vm2" {
+  name                 = "${local.service_name}-vm1-ext"
+  virtual_machine_id   = azurerm_linux_virtual_machine.vm2.id
+  publisher            = "dynatrace.ruxit"
+  type                 = "oneAgentLinux"
+  type_handler_version = "1.7"
+
+  settings = <<SETTINGS
+    {
+        "tenantId": "${data.TenantKvVariableGoesHere}"
+        "token": "${data.DynatraceTokenKvVariableGoesHere}"
+        "enableLogAnalytics": "yes"
+    }
+SETTINGS
+
+}
