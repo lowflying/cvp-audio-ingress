@@ -26,6 +26,9 @@ module "wowza" {
   ws_name                       = var.ws_name
   ws_sub_id                     = var.ws_sub_id
   ws_rg                         = var.ws_rg
+  dynatrace_id                  = var.dynatrace_id
+  dynatrace_host_group          = var.dynatrace_host_group
+  dynatrace_network_zone        = var.dynatrace_network_zone
 }
 
 resource "azurerm_dns_a_record" "wowza" {
