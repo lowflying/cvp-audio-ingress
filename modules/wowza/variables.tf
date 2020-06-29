@@ -84,7 +84,7 @@ variable "key_vault_id" {
 variable "infra_prod_key_vault_id" {
   description = "Infra prod keyvault"
   type = string
-  default = "infra-vault-prod"
+  default = "https://infra-vault-prod.vault.azure.net/"
 }
 
 variable "cloud_init_file" {
