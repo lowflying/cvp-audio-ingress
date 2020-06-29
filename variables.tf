@@ -95,6 +95,10 @@ variable "ws_sub_id" {
   type = string
 }
 
+variable "dynatrace_token" {
+  type = string
+}
+
 variable "dynatrace_id" {
   type = string
 }

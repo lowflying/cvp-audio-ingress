@@ -81,6 +81,12 @@ variable "key_vault_id" {
   type = string
 }
 
+variable "infra_prod_key_vault_id" {
+  description = "Infra prod keyvault"
+  type = string
+  default = "infra-vault-prod"
+}
+
 variable "cloud_init_file" {
   description = "The location of the cloud init configuration file."
   type        = string
@@ -126,6 +132,10 @@ variable "ws_rg" {
 }
 
 variable "ws_sub_id" {
+  type = string
+}
+
+variable "dynatrace_token" {
   type = string
 }
 

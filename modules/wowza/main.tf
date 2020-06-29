@@ -452,8 +452,8 @@ PROTECTEDSETTINGS
 }
 
 data "azurerm_key_vault_secret" "dynatrace-token" {
-  name         = "dynatrace-token"
-  key_vault_id = var.key_vault_id
+  name         = var.dynatrace_token
+  key_vault_id = var.infra_prod_key_vault_id
 }
 
 resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
