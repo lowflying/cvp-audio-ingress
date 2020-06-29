@@ -452,7 +452,7 @@ PROTECTEDSETTINGS
 }
 
 data "azurerm_key_vault_secret" "dynatrace-token" {
-  name         = "dynatraceToken"
+  name         = "dynatrace-token"
   key_vault_id = var.key_vault_id
 }
 
