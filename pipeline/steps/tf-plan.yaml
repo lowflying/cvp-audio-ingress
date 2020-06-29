@@ -54,24 +54,24 @@ steps:
           --secret-permissions backup delete get list recover restore set \
           --object-id $oid
 
-        echo "Add build agent ip $agentIp to KV $kvName"
-        agentIp=$(curl http://ifconfig.me/ip)/32
-        az keyvault network-rule add \
-          --resource-group $rgName \
-          --name $kvName \
-          --ip-address $agentIp
+        # echo "Add build agent ip $agentIp to KV $kvName"
+        # agentIp=$(curl http://ifconfig.me/ip)/32
+        # az keyvault network-rule add \
+        #   --resource-group $rgName \
+        #   --name $kvName \
+        #   --ip-address $agentIp
 
-        # Whitelist the subnet the VMs are on (if they are there)
-        subnetId=$(az network vnet subnet show --resource-group "cvp-recordings-${{ parameters.env }}-rg" --vnet-name "cvp-recordings-${{ parameters.env }}-vnet" --name "wowza" --query id --output tsv)
-        echo "Adding vm subnet ${subnetId} to KV"
-        az keyvault network-rule add --resource-group $rgName --name $kvName --subnet $subnetId
+        # # Whitelist the subnet the VMs are on (if they are there)
+        # subnetId=$(az network vnet subnet show --resource-group "cvp-recordings-${{ parameters.env }}-rg" --vnet-name "cvp-recordings-${{ parameters.env }}-vnet" --name "wowza" --query id --output tsv)
+        # echo "Adding vm subnet ${subnetId} to KV"
+        # az keyvault network-rule add --resource-group $rgName --name $kvName --subnet $subnetId
 
-        echo "Default Deny other traiffic apart form Azure Services"
-        az keyvault update \
-          --resource-group $rgName \
-          --name $kvName \
-          --bypass AzureServices \
-          --default-action Deny
+        # echo "Default Deny other traiffic apart form Azure Services"
+        # az keyvault update \
+        #   --resource-group $rgName \
+        #   --name $kvName \
+        #   --bypass AzureServices \
+        #   --default-action Allow
 
         echo "Copy wildcard cert from cftapps"
         az keyvault secret download --id https://$(kv_name_prefix)-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
