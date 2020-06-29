@@ -128,3 +128,15 @@ variable "ws_rg" {
 variable "ws_sub_id" {
   type = string
 }
+
+variable "dynatrace_id" {
+  type = string
+}
+
+variable "dynatrace_host_group" {
+  type = string
+}
+
+variable "dynatrace_network_zone" {
+  type = string
+}

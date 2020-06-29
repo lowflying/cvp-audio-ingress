@@ -10,3 +10,6 @@ variables:
   ws_name: 'hmcts-prod'
   ws_rg: 'oms-automation'
   ws_sub_name: 'DCD-CNP-Prod'
+  dynatrace_id: 'ebe20728'
+  dynatrace_host_group: 'prod_cvp'
+  dynatrace_network_zone: 'azure.cft'

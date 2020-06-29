@@ -451,18 +451,25 @@ PROTECTEDSETTINGS
 
 }
 
+data "azurerm_key_vault_secret" "dynatrace-token" {
+  name         = "dynatraceToken"
+  key_vault_id = var.key_vault_id
+}
+
 resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
   name                 = "${local.service_name}-vm1-ext"
   virtual_machine_id   = azurerm_linux_virtual_machine.vm1.id
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
-  type_handler_version = "1.7"
+  type_handler_version = "2.3"
 
   settings = <<SETTINGS
     {
-        "tenantId": "${data.TenantKvVariableGoesHere}"
-        "token": "${data.DynatraceTokenKvVariableGoesHere}"
+        "tenantId": "${var.dynatrace_id}"
+        "token": "${data.azurerm_key_vault_secret.dynatrace-token.value}"
         "enableLogAnalytics": "yes"
+        "host-group": "${var.dynatrace_host_group}"
+        "network-zone": "${var.dynatrace_network_zone}"
     }
 SETTINGS
 
@@ -473,13 +480,15 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm2" {
   virtual_machine_id   = azurerm_linux_virtual_machine.vm2.id
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
-  type_handler_version = "1.7"
+  type_handler_version = "2.3"
 
   settings = <<SETTINGS
     {
-        "tenantId": "${data.TenantKvVariableGoesHere}"
-        "token": "${data.DynatraceTokenKvVariableGoesHere}"
+        "tenantId": "${var.dynatrace_id}"
+        "token": "${data.azurerm_key_vault_secret.dynatrace-token.value}"
         "enableLogAnalytics": "yes"
+        "host-group": "${var.dynatrace_host_group}"
+        "network-zone": "${var.dynatrace_network_zone}"
     }
 SETTINGS
 
