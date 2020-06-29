@@ -777,6 +777,7 @@ runcmd:
   - 'export PATH=$PATH:/usr/local/WowzaStreamingEngine/java/bin'
   - 'keytool -importkeystore -srckeystore $secretsname.pfx -srcstoretype pkcs12 -destkeystore /usr/local/WowzaStreamingEngine/conf/ssl.wowza.jks -deststoretype JKS -deststorepass ${certPassword} -srcstorepass ${certPassword}'
   - 'sudo bash /home/wowza/mount.sh /usr/local/WowzaStreamingEngine/content/azurecopy'
+  - 'sudo echo "/home/wowza/mount.sh /usr/local/WowzaStreamingEngine/content/azurecopy fuse _netdev" >> /etc/fstab'
   - '/home/wowza/dir-creator.sh ${numApplications}'
   - 'sudo service WowzaStreamingEngine restart'
 
