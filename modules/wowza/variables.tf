@@ -84,7 +84,7 @@ variable "key_vault_id" {
 variable "infra_prod_key_vault_id" {
   description = "Infra prod keyvault"
   type = string
-  default = "https://infra-vault-prod.vault.azure.net/"
+  default = "/subscriptions/8999dec3-0104-4a27-94ee-6588559729d1/resourceGroups/core-infra-prod/providers/Microsoft.KeyVault/vaults/infra-vault-prod"
 }
 
 variable "cloud_init_file" {
