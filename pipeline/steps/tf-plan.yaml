@@ -73,6 +73,12 @@ steps:
         #   --bypass AzureServices \
         #   --default-action Allow
 
+        echo "Copy Dynatrace env token from infra-vault-prod"
+        az keyvault secret download --id https://infra-vault-prod.vault.azure.net/secrets/$(dynatrace_token) --file dynatrace-token
+
+        echo "Import Dynatrace env token to KV $kvName"
+        az keyvault certificate import --file cert-up.pfx --vault-name $kvName --name dynatrace-token --verbose 
+
         echo "Copy wildcard cert from cftapps"
         az keyvault secret download --id https://$(kv_name_prefix)-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
 
