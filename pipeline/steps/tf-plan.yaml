@@ -77,7 +77,7 @@ steps:
         az keyvault secret download --id https://$(infra_kv).vault.azure.net/secrets/$(dynatrace_token) --file dynatrace-token
 
         echo "Import Dynatrace env token to KV $kvName"
-        az keyvault secret set --name dynatrace-token --file dynatrace-token --vault-name $kvName --verbose 
+        az keyvault secret set --name $(dynatrace_token) --file dynatrace-token --vault-name $kvName --verbose 
 
         echo "Copy wildcard cert from cftapps"
         az keyvault secret download --id https://$(kv_name_prefix)-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
