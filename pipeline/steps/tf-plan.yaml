@@ -73,8 +73,8 @@ steps:
           --bypass AzureServices \
           --default-action Allow
 
-        echo "Copy Dynatrace env token from infra-vault-prod"
-        az keyvault secret download --id https://infra-vault-prod.vault.azure.net/secrets/$(dynatrace_token) --file dynatrace-token
+        echo "Copy Dynatrace env token from $(infra_kv)"
+        az keyvault secret download --id https://$(infra_kv).vault.azure.net/secrets/$(dynatrace_token) --file dynatrace-token
 
         echo "Import Dynatrace env token to KV $kvName"
         az keyvault certificate import --file cert-up.pfx --vault-name $kvName --name dynatrace-token --verbose 
