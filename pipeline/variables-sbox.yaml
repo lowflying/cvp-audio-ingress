@@ -3,6 +3,7 @@ variables:
   certName: 'STAR-sandbox-platform-hmcts-net'
   subscriptionName: 'DTS-SHAREDSERVICES-SBOX'
   kv_name_prefix : 'cftapps'
+  infra_kv: 'infra-vault-sandbox'
   dns_zone_name: "ss_aks.uk.south.sbox.hmcts.internal"
   dns_resource_group: "ss_aks_sbox_network_resource_group"
   address_space: "10.50.11.0/28"
@@ -10,7 +11,7 @@ variables:
   ws_name: 'hmcts-sandbox'
   ws_rg: 'oms-automation'
   ws_sub_name: 'DCD-CFT-Sandbox'
-  dynatrace_token: 'dynatrace-token'
+  dynatrace_token: 'dynatrace-nonprod-api-key'
   dynatrace_id: 'yrk32651'
   dynatrace_host_group: 'AAT_DTS_CVP'
   dynatrace_network_zone: 'azure.cft'
