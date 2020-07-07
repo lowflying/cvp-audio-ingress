@@ -467,7 +467,6 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
     {
         "tenantId": "${var.dynatrace_id}"
         "token": "${data.azurerm_key_vault_secret.dynatrace-token.value}"
-        "enableLogAnalytics": "yes"
         "host-group": "${var.dynatrace_host_group}"
         "network-zone": "${var.dynatrace_network_zone}"
     }
@@ -486,7 +485,6 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm2" {
     {
         "tenantId": "${var.dynatrace_id}"
         "token": "${data.azurerm_key_vault_secret.dynatrace-token.value}"
-        "enableLogAnalytics": "yes"
         "host-group": "${var.dynatrace_host_group}"
         "network-zone": "${var.dynatrace_network_zone}"
     }
