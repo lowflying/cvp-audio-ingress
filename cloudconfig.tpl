@@ -391,6 +391,7 @@ write_files:
               </VHost>
       </Root>
   - owner: root:root
+    permissions: '770'
     path: /etc/rc.local
     content: |
       #!/bin/sh -e
