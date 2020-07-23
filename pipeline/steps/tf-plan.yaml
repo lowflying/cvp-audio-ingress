@@ -31,11 +31,6 @@ steps:
       scriptLocation: 'inlineScript'
       inlineScript: |
 
-        # echo "SECRETS ###########"
-        # az keyvault secret list --vault-name $(kv_name_prefix)-${{ parameters.env }}
-        # echo "CERTS ###########"
-        # az keyvault certificate list --vault-name $(kv_name_prefix)-${{ parameters.env }}
-
         # ensure KV exists in same sub we are working in
         rgName="${{ parameters.product }}-sharedinfra-${{ parameters.env }}"
         kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
