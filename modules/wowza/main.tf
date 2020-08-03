@@ -451,7 +451,7 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
   virtual_machine_id   = azurerm_linux_virtual_machine.vm1.id
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
-  type_handler_version = "2.1"
+  type_handler_version = "1.2"
 
   settings = <<SETTINGS
     {
@@ -470,7 +470,7 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm2" {
   virtual_machine_id   = azurerm_linux_virtual_machine.vm2.id
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
-  type_handler_version = "2.1"
+  type_handler_version = "1.2"
 
   settings = <<SETTINGS
     {
