@@ -18,6 +18,7 @@ resource "azurerm_storage_account" "sa" {
   account_tier              = var.sa_account_tier
   account_replication_type  = var.sa_account_replication_type
   enable_https_traffic_only = true
+  prevent_destroy           = true
 }
 
 resource "azurerm_storage_container" "media_container" {
@@ -452,6 +453,8 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
   type_handler_version = "1.2"
+  depends_on           = "azurerm_virtual_machine_extension.log_analytics_vm1"
+
 
   settings = <<SETTINGS
     {
@@ -471,6 +474,7 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm2" {
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
   type_handler_version = "1.2"
+  depends_on           = "azurerm_virtual_machine_extension.log_analytics_vm2"
 
   settings = <<SETTINGS
     {
