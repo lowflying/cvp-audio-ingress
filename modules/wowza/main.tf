@@ -452,7 +452,7 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
   type_handler_version = "1.2"
-  depends_on           = azurerm_virtual_machine_extension.log_analytics_vm1
+  depends_on           = [azurerm_virtual_machine_extension.log_analytics_vm1]
 
 
   settings = <<SETTINGS
@@ -473,7 +473,7 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm2" {
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
   type_handler_version = "1.2"
-  depends_on           = azurerm_virtual_machine_extension.log_analytics_vm2
+  depends_on           = [azurerm_virtual_machine_extension.log_analytics_vm2]
 
   settings = <<SETTINGS
     {
