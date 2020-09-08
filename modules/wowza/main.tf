@@ -18,13 +18,13 @@ resource "azurerm_storage_account" "sa" {
   account_tier              = var.sa_account_tier
   account_replication_type  = var.sa_account_replication_type
   enable_https_traffic_only = true
-  prevent_destroy           = true
 }
 
 resource "azurerm_storage_container" "media_container" {
   name                  = "recordings"
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
+  prevent_destroy       = true
 }
 
 // Keep this resource until all recordings have been migrated to `recordings` container
