@@ -451,7 +451,7 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
   virtual_machine_id   = azurerm_linux_virtual_machine.vm1.id
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
-  type_handler_version = "2.3"
+  type_handler_version = "1.2"
 
 
   settings = <<SETTINGS
@@ -459,8 +459,8 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm1" {
         "tenantId": "${var.dynatrace_id}",
         "token": "${data.azurerm_key_vault_secret.dynatrace-token.value}",
         "enableLogAnalytics": "yes",
-        "hostGroup": "${var.dynatrace_host_group}",
-        "networkZone": "${var.dynatrace_network_zone}"
+        "host-group": "${var.dynatrace_host_group}",
+        "network-zone": "${var.dynatrace_network_zone}"
     }
 SETTINGS
 
@@ -471,7 +471,7 @@ resource "azurerm_virtual_machine_extension" "dynatrace_vm2" {
   virtual_machine_id   = azurerm_linux_virtual_machine.vm2.id
   publisher            = "dynatrace.ruxit"
   type                 = "oneAgentLinux"
-  type_handler_version = "2.3"
+  type_handler_version = "1.2"
 
   settings = <<SETTINGS
     {
