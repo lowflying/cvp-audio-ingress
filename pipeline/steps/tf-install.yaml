@@ -1,7 +1,7 @@
 parameters:
   - name: version
     type: string
-    default: '0.13.2'
+    default: '0.12.24'
 
 steps:
   - task: TerraformInstaller@0
