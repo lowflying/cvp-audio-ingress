@@ -27,9 +27,9 @@ resource "azurerm_storage_account" "sa" {
 
 resource "azurerm_management_lock" "sa" {
   name       = "resource-sa"
-  scope      = azurerm_storage_account.sa.name
+  scope      = azurerm_storage_account.sa.id
   lock_level = "CanNotDelete"
-  notes      = "Locked because it's needed by a third-party"
+  notes      = "Lock to prevent deletion of storage account"
 }
 
 resource "azurerm_storage_container" "media_container" {
