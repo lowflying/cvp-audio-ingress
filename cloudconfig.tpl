@@ -770,6 +770,8 @@ write_files:
 
 
 runcmd:
+  - 'sudo dpkg --get-selections fuse || sudo apt-get install -y fuse'
+  - 'sudo dpkg --get-selections blobfuse || sudo apt-get install -y blobfuse'
   - 'wget https://www.wowza.com/downloads/forums/collection/wse-plugin-autorecord.zip && unzip wse-plugin-autorecord.zip && mv lib/wse-plugin-autorecord.jar /usr/local/WowzaStreamingEngine/lib/ && chown wowza: /usr/local/WowzaStreamingEngine/lib/wse-plugin-autorecord.jar'
   - 'sudo mkdir /mnt/blobfusetmp'
   - 'sudo mkdir /usr/local/WowzaStreamingEngine/content/azurecopy'
