@@ -76,3 +76,5 @@ stages:
             parameters:
               subscriptionName: $(subscriptionName)
               env: $(env)
+              location: $(location)
+              product: $(product)
