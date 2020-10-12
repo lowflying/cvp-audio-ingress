@@ -31,11 +31,6 @@ steps:
       scriptLocation: 'inlineScript'
       inlineScript: |
 
-        # echo "SECRETS ###########"
-        # az keyvault secret list --vault-name $(kv_name_prefix)-${{ parameters.env }}
-        # echo "CERTS ###########"
-        # az keyvault certificate list --vault-name $(kv_name_prefix)-${{ parameters.env }}
-
         # ensure KV exists in same sub we are working in
         rgName="${{ parameters.product }}-sharedinfra-${{ parameters.env }}"
         kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
@@ -72,6 +67,12 @@ steps:
           --name $kvName \
           --bypass AzureServices \
           --default-action Deny
+
+        echo "Copy Dynatrace env token from $(infra_kv)"
+        az keyvault secret download --id https://$(infra_kv).vault.azure.net/secrets/$(dynatrace_token) --file dynatrace-token
+
+        echo "Import Dynatrace env token to KV $kvName"
+        az keyvault secret set --name $(dynatrace_token) --file dynatrace-token --vault-name $kvName --verbose
 
         echo "Copy wildcard cert from cftapps"
         az keyvault secret download --id https://$(kv_name_prefix)-${{ parameters.env }}.vault.azure.net/secrets/${{ parameters.certName }} -f cert.pfx
@@ -151,3 +152,36 @@ steps:
       command: 'plan'
       environmentServiceName: ${{ parameters.subscriptionName }}
       commandOptions: '-var "common_tags={\"environment\":\"${{ parameters.env }}\",\"teamName\":\"$(product)\",\"BuiltFrom\":\"$(builtFrom)\"}" -var "location=$(location)" -var "product=$(product)" -var "env=${{ parameters.env }}" -var "cert_path=$(certPath)" -var "service_certificate_kv_url=$(secretId)" -var "thumbprint=$(thumbprint)" -var "key_vault_id=$(kvId)" -var "wowza_sku=$(wowza_sku)" -var "wowza_version=$(wowza_version)" -var "wowza_publisher=$(wowza_publisher)" -var "wowza_offer=$(wowza_offer)" -var "dns_zone_name=$(dns_zone_name)" -var "dns_resource_group=$(dns_resource_group)" -var "address_space=$(address_space)" -var "num_applications=$(num_applications)" -var "ssh_public_key=$(pubKey)" -var "rtmps_source_address_prefixes=[$(rtmps_source_address_prefixes)]" -var "ws_name=$(ws_name)" -var "ws_rg=$(ws_rg)" -var "ws_sub_id=$(ws_sub_id)" -out="${{ parameters.env }}.tfplan" -no-color -input=false'
+  
+  - task: AzureCLI@3
+    displayName: Deploy Dynatrace
+    inputs:
+      azureSubscription: '${{ parameters.subscriptionName}}'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        dynatrace_token=$(az keyvault certificate show --id https://$kvName.vault.azure.net/certificates/$(dynatrace_token))
+        
+        #install dynatrace apm ext on vm1
+        if [[ $(az vm extension show --subscription ${{ parameters.subscriptionName}}  -g $rgName --vm-name $rgName-vm1 -n oneAgentLinux | jq -r '.name' ) = "oneAgentLinux" ]] ; then
+            # delete ext
+            az vm extension delete --subscription ${{ parameters.subscriptionName}} -g $rgName --vm-name $rgName-vm1 -n oneAgentLinux
+            sleep 240
+            # then deploy to vm1 
+            az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name <vmNameGoesHere> --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+        else 
+            # deploy to vm1
+            az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name <vmNameGoesHere> --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+        fi
+
+        #install dynatrace apm ext on vm2
+        if [[ $(az vm extension show --subscription ${{ parameters.subscriptionName}}  -g $rgName --vm-name $rgName-vm2 -n oneAgentLinux | jq -r '.name' ) = "oneAgentLinux" ]] ; then
+            # delete ext
+            az vm extension delete --subscription ${{ parameters.subscriptionName}} -g $rgName --vm-name $rgName-vm2 -n oneAgentLinux
+            sleep 240
+            # then deploy to vm2 
+            az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name <vmNameGoesHere> --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+        else 
+            # deploy to vm2
+            az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name <vmNameGoesHere> --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+        fi
