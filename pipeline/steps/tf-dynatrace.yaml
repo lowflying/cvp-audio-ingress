@@ -1,0 +1,53 @@
+parameters:
+  - name: subscriptionName
+    type: string
+  - name: env
+    type: string
+  - name: certName
+    type: string
+  - name: location
+    type: string
+  - name: product
+    type: string
+
+  - task: AzureCLI@2
+    displayName: Deploy Dynatrace
+    inputs:
+      azureSubscription: '${{ parameters.subscriptionName }}'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        rgName="${{ parameters.product }}-recordings-${{ parameters.env }}-rg"
+        kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
+        
+        echo "Copy Dynatrace env token from $(infra_kv)"
+        az keyvault secret download --id https://$(infra_kv).vault.azure.net/secrets/$(dynatrace_token) --file dynatrace-token
+
+        echo "Import Dynatrace env token to KV $kvName"
+        az keyvault secret set --name $(dynatrace_token) --file dynatrace-token --vault-name $kvName --verbose
+      
+        dynatrace_token=$(az keyvault certificate show --id https://$kvName.vault.azure.net/certificates/$(dynatrace_token))
+        
+        #install dynatrace apm ext on vm1
+        if [[ $(az vm extension show --subscription ${{ parameters.subscriptionName}}  -g $rgName --vm-name $rgName-vm1 -n oneAgentLinux | jq -r '.name' ) = "oneAgentLinux" ]] ; then
+           # delete ext
+           az vm extension delete --subscription ${{ parameters.subscriptionName}} -g $rgName --vm-name $rgName-vm1 -n oneAgentLinux
+           sleep 240
+           # then deploy to vm1 
+           az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm1 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+         else 
+           # deploy to vm1
+           az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm1 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+         fi
+
+         #install dynatrace apm ext on vm2
+         if [[ $(az vm extension show --subscription ${{ parameters.subscriptionName}}  -g $rgName --vm-name $rgName-vm2 -n oneAgentLinux | jq -r '.name' ) = "oneAgentLinux" ]] ; then
+           # delete ext
+           az vm extension delete --subscription ${{ parameters.subscriptionName}} -g $rgName --vm-name $rgName-vm2 -n oneAgentLinux
+           sleep 240
+           # then deploy to vm2 
+           az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm2 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+         else 
+           # deploy to vm2
+           az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm2 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
+         fi
