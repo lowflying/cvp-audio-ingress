@@ -1,7 +1,7 @@
 variables:
   locationEng: 'UK South' # add coalese
   location: 'uksouth' # add coalese
-  wowza_sku: 'linux-paid'
+  wowza_sku: 'linux-paid-4-8'
   wowza_version: '4.8.5'
   wowza_publisher: 'wowza'
   wowza_offer: 'wowzastreamingengine'

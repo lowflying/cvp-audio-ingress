@@ -27,26 +27,14 @@ steps:
       
         dynatrace_token=$(az keyvault certificate show --id https://$kvName.vault.azure.net/certificates/$(dynatrace_token))
         
-        #install dynatrace apm ext on vm1
-        if [[ $(az vm extension show --subscription ${{ parameters.subscriptionName}}  -g $rgName --vm-name $rgName-vm1 -n oneAgentLinux | jq -r '.name' ) = "oneAgentLinux" ]] ; then
-          # delete ext
-          az vm extension delete --subscription ${{ parameters.subscriptionName}} -g $rgName --vm-name $rgName-vm1 -n oneAgentLinux
-          sleep 240
-          # then deploy to vm1 
-          az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm1 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
-        else 
-          # deploy to vm1
-          az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm1 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
-        fi
+        # delete ext for vm1
+        az vm extension delete --subscription ${{ parameters.subscriptionName }} -g $rgName --vm-name $rgName-vm1 -n oneAgentLinux || true
 
-        #install dynatrace apm ext on vm2
-        if [[ $(az vm extension show --subscription ${{ parameters.subscriptionName}}  -g $rgName --vm-name $rgName-vm2 -n oneAgentLinux | jq -r '.name' ) = "oneAgentLinux" ]] ; then
-          # delete ext
-          az vm extension delete --subscription ${{ parameters.subscriptionName}} -g $rgName --vm-name $rgName-vm2 -n oneAgentLinux
-          sleep 240
-          # then deploy to vm2 
-          az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm2 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
-        else 
-          # deploy to vm2
-          az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName}} --resource-group $rgName --vm-name --vm-name $rgName-vm2 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
-        fi
+        # deploy to vm1 
+        az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName }} --resource-group $rgName --vm-name --vm-name $rgName-vm1 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'        
+        
+        # delete ext for vm2
+        az vm extension delete --subscription ${{ parameters.subscriptionName}} -g $rgName --vm-name $rgName-vm2 -n oneAgentLinux || true
+
+        # deploy to vm2
+        az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName }} --resource-group $rgName --vm-name --vm-name $rgName-vm2 --settings '{"tenantId":"${dynatrace_id}","token":"$(dynatrace_token)","hostGroup":"${dynatrace_host_group}","networkZone":"${dynatrace_network_zone}","enableLogAnalytics":"yes"}'
