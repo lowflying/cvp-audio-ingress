@@ -8,6 +8,7 @@ parameters:
   - name: product
     type: string
 
+steps: 
   - task: AzureCLI@2
     displayName: Deploy Dynatrace
     inputs:
