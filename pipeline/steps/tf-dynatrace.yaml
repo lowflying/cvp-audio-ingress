@@ -9,6 +9,19 @@ parameters:
     type: string
 
 steps:
+  - task: AzurePowerShell@5
+    inputs:
+      azureSubscription: 'DTS-SHAREDSERVICES-SBOX'
+      ScriptType: 'InlineScript'
+      Inline: |
+        $Context = Get-AzContext
+        $AzureDevOpsServicePrincipal = Get-AzADServicePrincipal -ApplicationId $Context.Account.Id
+        $ObjectId = $AzureDevOpsServicePrincipal.Id
+
+        echo "##vso[task.setvariable variable=oid]$ObjectId"
+      azurePowerShellVersion: 'LatestVersion'
+      pwsh: true
+      
   - task: AzureCLI@2
     displayName: Deploy Dynatrace
     inputs:
@@ -19,12 +32,6 @@ steps:
         rgName="${{ parameters.product }}-recordings-${{ parameters.env }}-rg"
         rgNameCom="${{ parameters.product }}-recordings-${{ parameters.env }}"
         kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
-        
-        echo "Copy Dynatrace env token from $(infra_kv)"
-        az keyvault secret download --id https://$(infra_kv).vault.azure.net/secrets/$(dynatrace_token) --file dynatrace-token
-
-        echo "Import Dynatrace env token to KV $kvName"
-        az keyvault secret set --name $(dynatrace_token) --file dynatrace-token --vault-name $kvName --verbose
       
         dynatrace_token=$(az keyvault certificate show --id https://$kvName.vault.azure.net/certificates/$(dynatrace_token))
         
