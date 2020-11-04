@@ -142,15 +142,15 @@ resource "azurerm_network_security_group" "sg" {
   location            = azurerm_resource_group.rg.location
 
   security_rule {
-    name                         = "RTMPS"
-    priority                     = 1040
-    direction                    = "Inbound"
-    access                       = "Allow"
-    protocol                     = "Tcp"
-    source_port_range            = "*"
-    destination_port_range       = "443"
-    source_address_prefixes      = var.rtmps_source_address_prefixes
-    destination_address_prefixes = "*"
+    name                       = "RTMPS"
+    priority                   = 1040
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefixes    = var.rtmps_source_address_prefixes
+    destination_address_prefix = "*"
   }
 }
 
