@@ -52,7 +52,7 @@ resource "azurerm_subnet" "sn" {
   name                 = "wowza"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefix       = var.address_space
+  address_prefixes     = var.address_space
   service_endpoints    = ["Microsoft.KeyVault"]
 
   enforce_private_link_endpoint_network_policies = true
@@ -142,15 +142,15 @@ resource "azurerm_network_security_group" "sg" {
   location            = azurerm_resource_group.rg.location
 
   security_rule {
-    name                       = "RTMPS"
-    priority                   = 1040
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefixes    = var.rtmps_source_address_prefixes
-    destination_address_prefix = "*"
+    name                         = "RTMPS"
+    priority                     = 1040
+    direction                    = "Inbound"
+    access                       = "Allow"
+    protocol                     = "Tcp"
+    source_port_range            = "*"
+    destination_port_range       = "443"
+    source_address_prefixes      = var.rtmps_source_address_prefixes
+    destination_address_prefixes = "*"
   }
 }
 
