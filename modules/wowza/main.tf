@@ -29,7 +29,7 @@ resource "azurerm_storage_container" "media_container" {
 // Keep this resource until all recordings have been migrated to `recordings` container
 resource "azurerm_storage_container" "media_container_01" {
   name                  = "recordings01"
-  storage_account_name  = azurerm_storage_account.sa.name
+  storage_account_name  = zazurerm_storage_account.sa.name
   container_access_type = "private"
 }
 
