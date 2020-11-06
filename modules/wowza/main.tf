@@ -27,13 +27,13 @@ resource "azurerm_storage_account" "sa" {
       version               = "1.0"
     }
     hour_metrics {
-      enabed                = true
+      enabled               = true
       include_apis          = true
       retention_policy_days = 365
       version               = "1.0"               
     }
     minute_metrics {
-      enabed                = true
+      enabled               = true
       include_apis          = true
       retention_policy_days = 365
       version               = "1.0"               
