@@ -11,7 +11,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-kv-diag-set" {
       enabled = true
       days    = 90
     }
-  }
+  }z
 
   metric {
     category = "AllMetrics"

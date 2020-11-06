@@ -18,6 +18,13 @@ resource "azurerm_storage_account" "sa" {
   account_tier              = var.sa_account_tier
   account_replication_type  = var.sa_account_replication_type
   enable_https_traffic_only = true
+  logging {
+    delete = enabled
+    read = enabled
+    retention_policy_days = “365”
+    version = “2”
+    write = enabled
+    }
 }
 
 resource "azurerm_storage_container" "media_container" {
