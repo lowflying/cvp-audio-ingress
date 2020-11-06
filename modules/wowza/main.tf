@@ -23,6 +23,7 @@ resource "azurerm_storage_account" "sa" {
       delete                = true
       read                  = true
       write                 = true
+      delete_data           = true
       retention_policy_days = 365
       version               = "1.0"
     }
