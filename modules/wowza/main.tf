@@ -18,12 +18,11 @@ resource "azurerm_storage_account" "sa" {
   account_tier              = var.sa_account_tier
   account_replication_type  = var.sa_account_replication_type
   enable_https_traffic_only = true
-  queue_properties {
+  blob_properties {
     logging {
       delete                = true
       read                  = true
       write                 = true
-      delete_data           = true
       retention_policy_days = 365
       version               = "1.0"
     }
