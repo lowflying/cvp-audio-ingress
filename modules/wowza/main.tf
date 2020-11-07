@@ -18,25 +18,26 @@ resource "azurerm_storage_account" "sa" {
   account_tier              = var.sa_account_tier
   account_replication_type  = var.sa_account_replication_type
   enable_https_traffic_only = true
-  
-  logging {
-    delete                = true
-    read                  = true
-    write                 = true
-    retention_policy_days = 365
-    version               = "1.0"
-  }
-  hour_metrics {
-    enabled               = true
-    include_apis          = true
-    retention_policy_days = 365
-    version               = "1.0"               
-  }
-  minute_metrics {
-    enabled               = true
-    include_apis          = true
-    retention_policy_days = 365
-    version               = "1.0"               
+  blob_properties {
+    logging {
+      delete                = true
+      read                  = true
+      write                 = true
+      retention_policy_days = 365
+      version               = "1.0"
+    }
+    hour_metrics {
+      enabled               = true
+      include_apis          = true
+      retention_policy_days = 365
+      version               = "1.0"               
+    }
+    minute_metrics {
+      enabled               = true
+      include_apis          = true
+      retention_policy_days = 365
+      version               = "1.0"               
+    }
   }
 }
 
