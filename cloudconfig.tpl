@@ -29,7 +29,7 @@ write_files:
                                       <SSLProtocol>TLS</SSLProtocol>
                                       <Algorithm>SunX509</Algorithm>
                                       <CipherSuites></CipherSuites>
-                                      <Protocols></Protocols>
+                                      <Protocols>TLSv1.3</Protocols>
                               </SSLConfig>
                               <IPWhiteList>*</IPWhiteList>
                               <IPBlackList></IPBlackList>
@@ -162,7 +162,7 @@ write_files:
                                               <SSLProtocol>TLS</SSLProtocol>
                                               <Algorithm>SunX509</Algorithm>
                                               <CipherSuites></CipherSuites>
-                                              <Protocols></Protocols>
+                                              <Protocols>TLSv1.3</Protocols>
                                       </SSLConfig>
                                       <SocketConfiguration>
                                               <ReuseAddress>true</ReuseAddress>
