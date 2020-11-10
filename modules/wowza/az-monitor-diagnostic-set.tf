@@ -28,17 +28,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set" {
  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
  log {
-   category = "Administrative"
-   enabled  = true
- }
-
- log {
-   category = "Security"
-   enabled  = true
- }
-
- log {
-   category = "ServiceHealth"
+   category = "AllLogs"
    enabled  = true
  }
 }
@@ -49,17 +39,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set" {
  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
  log {
-   category = "Administrative"
-   enabled  = true
- }
-
- log {
-   category = "Security"
-   enabled  = true
- }
-
- log {
-   category = "ServiceHealth"
+   category = "AllLogs"
    enabled  = true
  }
 }
@@ -68,11 +48,6 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
  name               = "cvp-sa-${var.env}-diag-set"
  target_resource_id = azurerm_storage_account.sa.id
  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
-
- log {
-   category = "AllLogs"
-   enabled  = true
- }
 
  metric {
    category = "Capacity"
