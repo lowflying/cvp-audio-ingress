@@ -41,11 +41,6 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set" {
    category = "ServiceHealth"
    enabled  = true
  }
-
- log {
-   category = "Alert"
-   enabled  = true
- }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set" {
@@ -67,11 +62,6 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set" {
    category = "ServiceHealth"
    enabled  = true
  }
-
- log {
-   category = "Alert"
-   enabled  = true
- }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
@@ -80,17 +70,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
  log {
-   category = "StorageRead"
-   enabled  = true
- }
-
- log {
-   category = "StorageWrite"
-   enabled  = true
- }
-
- log {
-   category = "StorageDelete"
+   category = "AllLogs"
    enabled  = true
  }
 
