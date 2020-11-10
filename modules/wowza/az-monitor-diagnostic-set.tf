@@ -28,7 +28,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set" {
  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
  log {
-   category = "AllLogs"
+   category = "AllMetrics"
    enabled  = true
  }
 }
@@ -39,7 +39,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set" {
  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
  log {
-   category = "AllLogs"
+   category = "AllMetrics"
    enabled  = true
  }
 }
