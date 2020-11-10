@@ -107,15 +107,15 @@ resource "azurerm_private_dns_a_record" "sa_a_record" {
   records             = [azurerm_private_endpoint.endpoint.private_service_connection.0.private_ip_address]
 }
 
-resource "azurerm_storage_account_network_rules" "wowza" {
-  resource_group_name  = azurerm_resource_group.rg.name
-  storage_account_name = azurerm_storage_account.sa.name
+# resource "azurerm_storage_account_network_rules" "wowza" {
+#   resource_group_name  = azurerm_resource_group.rg.name
+#   storage_account_name = azurerm_storage_account.sa.name
 
-  default_action             = "Deny"
-  ip_rules                   = []
-  virtual_network_subnet_ids = []
-  bypass                     = ["Logging", "AzureServices"]
-}
+#   default_action             = "Deny"
+#   ip_rules                   = []
+#   virtual_network_subnet_ids = []
+#   bypass                     = ["Logging", "AzureServices"]
+# }
 
 resource "azurerm_public_ip" "pip" {
   name = "${local.service_name}-pip"
