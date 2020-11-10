@@ -18,6 +18,18 @@ resource "azurerm_storage_account" "sa" {
   account_tier              = var.sa_account_tier
   account_replication_type  = var.sa_account_replication_type
   enable_https_traffic_only = true
+  blob_properties {
+    delete_retention_policy {
+      days = 365
+    }
+  }
+}
+
+resource "azurerm_management_lock" "sa" {
+  name       = "resource-sa"
+  scope      = azurerm_storage_account.sa.id
+  lock_level = "CanNotDelete"
+  notes      = "Lock to prevent deletion of storage account"
 }
 
 resource "azurerm_storage_container" "media_container" {

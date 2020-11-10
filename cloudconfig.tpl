@@ -29,7 +29,7 @@ write_files:
                                       <SSLProtocol>TLS</SSLProtocol>
                                       <Algorithm>SunX509</Algorithm>
                                       <CipherSuites></CipherSuites>
-                                      <Protocols>TLSv1.3</Protocols>
+                                      <Protocols>TLSv1.2</Protocols>
                               </SSLConfig>
                               <IPWhiteList>*</IPWhiteList>
                               <IPBlackList></IPBlackList>
@@ -162,7 +162,7 @@ write_files:
                                               <SSLProtocol>TLS</SSLProtocol>
                                               <Algorithm>SunX509</Algorithm>
                                               <CipherSuites></CipherSuites>
-                                              <Protocols>TLSv1.3</Protocols>
+                                              <Protocols>TLSv1.2</Protocols>
                                       </SSLConfig>
                                       <SocketConfiguration>
                                               <ReuseAddress>true</ReuseAddress>
@@ -770,8 +770,8 @@ write_files:
 
 
 runcmd:
-  - 'sudo dpkg --get-selections fuse || sudo apt-get install -y fuse'
-  - 'sudo dpkg --get-selections blobfuse || sudo apt-get install -y blobfuse'
+  - 'sudo apt-get install -y fuse'
+  - 'sudo apt-get install -y blobfuse'
   - 'wget https://www.wowza.com/downloads/forums/collection/wse-plugin-autorecord.zip && unzip wse-plugin-autorecord.zip && mv lib/wse-plugin-autorecord.jar /usr/local/WowzaStreamingEngine/lib/ && chown wowza: /usr/local/WowzaStreamingEngine/lib/wse-plugin-autorecord.jar'
   - 'sudo mkdir /mnt/blobfusetmp'
   - 'sudo mkdir /usr/local/WowzaStreamingEngine/content/azurecopy'

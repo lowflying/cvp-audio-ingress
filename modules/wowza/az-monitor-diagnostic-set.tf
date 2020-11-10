@@ -22,32 +22,77 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-kv-diag-set" {
   }
 }
 
-//resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set2" {
-//  name               = "cvp-vm1-${var.env}-diag-set2"
-//  target_resource_id = azurerm_linux_virtual_machine.vm1.id
-//  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
-//
-//  metric {
-//    category = "AllMetrics"
-//    enabled  = true
-//  }
-//}
-//
-//resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set2" {
-//  name               = "cvp-vm2-${var.env}-diag-set2"
-//  target_resource_id = azurerm_linux_virtual_machine.vm2.id
-//  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
-//
-//  metric {
-//    category = "AllMetrics"
-//    enabled  = true
-//  }
-//}
+resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set" {
+ name               = "cvp-vm1-${var.env}-diag-set"
+ target_resource_id = azurerm_linux_virtual_machine.vm1.id
+ log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
-resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set2" {
- name               = "cvp-sa-${var.env}-diag-set2"
+ log {
+   category = "Administrative"
+   enabled  = true
+ }
+
+ log {
+   category = "Security"
+   enabled  = true
+ }
+
+ log {
+   category = "ServiceHealth"
+   enabled  = true
+ }
+
+ log {
+   category = "Alert"
+   enabled  = true
+ }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "cvp-vm2-diag-set" {
+ name               = "cvp-vm2-${var.env}-diag-set"
+ target_resource_id = azurerm_linux_virtual_machine.vm2.id
+ log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
+
+ log {
+   category = "Administrative"
+   enabled  = true
+ }
+
+ log {
+   category = "Security"
+   enabled  = true
+ }
+
+ log {
+   category = "ServiceHealth"
+   enabled  = true
+ }
+
+ log {
+   category = "Alert"
+   enabled  = true
+ }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
+ name               = "cvp-sa-${var.env}-diag-set"
  target_resource_id = azurerm_storage_account.sa.id
  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
+
+ log {
+   category = "StorageRead"
+   enabled  = true
+ }
+
+ log {
+   category = "StorageWrite"
+   enabled  = true
+ }
+
+ log {
+   category = "StorageDelete"
+   enabled  = true
+ }
 
  metric {
    category = "Capacity"
