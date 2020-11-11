@@ -144,6 +144,7 @@ resource "azurerm_network_security_group" "sg" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
+  #ingress rules
   security_rule {
     name                       = "RTMPS"
     priority                   = 1040
@@ -155,7 +156,7 @@ resource "azurerm_network_security_group" "sg" {
     source_address_prefixes    = var.rtmps_source_address_prefixes
     destination_address_prefix = "*"
   }
-  
+  #egress rules 
   security_rule {
     name                       = "Required_Packages"
     priority                   = 1041
@@ -166,7 +167,6 @@ resource "azurerm_network_security_group" "sg" {
     destination_port_range     = "443"
     destination_address_prefix = "Internet.UkSouth"
   }
-
   security_rule {
     name                       = "Required_Packages"
     priority                   = 1042
@@ -177,7 +177,6 @@ resource "azurerm_network_security_group" "sg" {
     destination_port_range     = "80"
     destination_address_prefix = "Internet.UkSouth"
   }
-
   security_rule {
     name                       = "Required_Packages"
     priority                   = 1043
