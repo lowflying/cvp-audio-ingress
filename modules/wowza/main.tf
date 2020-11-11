@@ -190,10 +190,10 @@ resource "azurerm_network_security_group" "sg" {
   }
   security_rule {
     name                       = "Required_Packages"
-    priority                   = 65001
+    priority                   = 4096
     direction                  = "Outbound"
     access                     = "Deny"
-    protocol                   = "Any"
+    protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "Any"
     destination_address_prefix = "Internet.UkSouth"
