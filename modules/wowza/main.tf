@@ -203,7 +203,7 @@ resource "azurerm_network_security_group" "sg" {
   }
   security_rule {
     name                       = "VNet"
-    priority                   = 1044
+    priority                   = 1045
     direction                  = "Outbound"
     access                     = "Allow"
     protocol                   = "*"
@@ -221,7 +221,7 @@ resource "azurerm_network_security_group" "sg" {
     source_port_range          = "*"
     destination_port_range     = "*"
     source_address_prefix      = "*"
-    destination_address_prefix = "Internet"
+    destination_address_prefix = "*"
   }
 }
 
