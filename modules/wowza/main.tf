@@ -166,7 +166,7 @@ resource "azurerm_network_security_group" "sg" {
     source_port_range          = "*"
     destination_port_range     = "443"
     source_address_prefix      = "*"
-    destination_address_prefix = "Internet.UkSouth"
+    destination_address_prefix = "Internet"
   }
   security_rule {
     name                       = "Required_Packages_80"
@@ -177,7 +177,7 @@ resource "azurerm_network_security_group" "sg" {
     source_port_range          = "*"
     destination_port_range     = "80"
     source_address_prefix      = "*"
-    destination_address_prefix = "Internet.UkSouth"
+    destination_address_prefix = "Internet"
   }
   security_rule {
     name                       = "DNS_53"
@@ -188,7 +188,7 @@ resource "azurerm_network_security_group" "sg" {
     source_port_range          = "*"
     destination_port_range     = "53"
     source_address_prefix      = "*"
-    destination_address_prefix = "Internet.UkSouth"
+    destination_address_prefix = "Internet"
   }
 }
 
