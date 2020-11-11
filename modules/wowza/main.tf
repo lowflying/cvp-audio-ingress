@@ -195,7 +195,7 @@ resource "azurerm_network_security_group" "sg" {
     priority                   = 1044
     direction                  = "Outbound"
     access                     = "Allow"
-    protocol                   = "Udp"
+    protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
     source_address_prefix      = "*"
