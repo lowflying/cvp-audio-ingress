@@ -165,7 +165,7 @@ resource "azurerm_network_security_group" "sg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "443"
-    source_address_prefixes    = "*"
+    source_address_prefix      = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
@@ -176,7 +176,7 @@ resource "azurerm_network_security_group" "sg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
-    source_address_prefixes    = "*"
+    source_address_prefix      = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
@@ -187,21 +187,9 @@ resource "azurerm_network_security_group" "sg" {
     protocol                   = "Udp"
     source_port_range          = "*"
     destination_port_range     = "53"
-    source_address_prefixes    = "*"
+    source_address_prefix      = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
-  security_rule {
-    name                       = "Deny_All"
-    priority                   = 4096
-    direction                  = "Outbound"
-    access                     = "Deny"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefixes    = "*"
-    destination_address_prefix = "Internet.UkSouth"
-  }
-}
 
 resource "azurerm_network_interface" "nic1" {
   name = "${local.service_name}-nic1"
