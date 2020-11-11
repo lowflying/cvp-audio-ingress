@@ -191,6 +191,28 @@ resource "azurerm_network_security_group" "sg" {
     destination_address_prefix = "Internet"
   }
   security_rule {
+    name                       = "Sftp"
+    priority                   = 1044
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Udp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "Internet"
+  }
+  security_rule {
+    name                       = "VNet"
+    priority                   = 1044
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "VirtualNetwork"
+  }
+  security_rule {
     name                       = "Deny_All"
     priority                   = 4096
     direction                  = "Outbound"
