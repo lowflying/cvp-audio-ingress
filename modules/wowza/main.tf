@@ -155,6 +155,49 @@ resource "azurerm_network_security_group" "sg" {
     source_address_prefixes    = var.rtmps_source_address_prefixes
     destination_address_prefix = "*"
   }
+  
+  security_rule {
+    name                       = "Required_Packages"
+    priority                   = 1041
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    destination_address_prefix = "Internet.UkSouth"
+  }
+
+  security_rule {
+    name                       = "Required_Packages"
+    priority                   = 1042
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    destination_address_prefix = "Internet.UkSouth"
+  }
+
+  security_rule {
+    name                       = "Required_Packages"
+    priority                   = 1043
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Udp"
+    source_port_range          = "*"
+    destination_port_range     = "53"
+    destination_address_prefix = "Internet.UkSouth"
+  }
+  security_rule {
+    name                       = "Required_Packages"
+    priority                   = 65001
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "Any"
+    source_port_range          = "*"
+    destination_port_range     = "Any"
+    destination_address_prefix = "Internet.UkSouth"
+  }
 }
 
 resource "azurerm_network_interface" "nic1" {
