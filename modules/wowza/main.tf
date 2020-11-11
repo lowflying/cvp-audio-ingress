@@ -165,6 +165,7 @@ resource "azurerm_network_security_group" "sg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "443"
+    source_address_prefixes    = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
@@ -175,6 +176,7 @@ resource "azurerm_network_security_group" "sg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
+    source_address_prefixes    = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
@@ -185,6 +187,7 @@ resource "azurerm_network_security_group" "sg" {
     protocol                   = "Udp"
     source_port_range          = "*"
     destination_port_range     = "53"
+    source_address_prefixes    = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
@@ -194,7 +197,8 @@ resource "azurerm_network_security_group" "sg" {
     access                     = "Deny"
     protocol                   = "*"
     source_port_range          = "*"
-    destination_port_range     = "Any"
+    destination_port_range     = "*"
+    source_address_prefixes    = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
 }
