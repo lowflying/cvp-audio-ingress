@@ -190,6 +190,7 @@ resource "azurerm_network_security_group" "sg" {
     source_address_prefix      = "*"
     destination_address_prefix = "Internet.UkSouth"
   }
+}
 
 resource "azurerm_network_interface" "nic1" {
   name = "${local.service_name}-nic1"
