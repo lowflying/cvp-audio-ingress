@@ -158,7 +158,7 @@ resource "azurerm_network_security_group" "sg" {
   }
   #egress rules 
   security_rule {
-    name                       = "Required_Packages"
+    name                       = "Required_Packages_443"
     priority                   = 1041
     direction                  = "Outbound"
     access                     = "Allow"
@@ -168,7 +168,7 @@ resource "azurerm_network_security_group" "sg" {
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
-    name                       = "Required_Packages"
+    name                       = "Required_Packages_80"
     priority                   = 1042
     direction                  = "Outbound"
     access                     = "Allow"
@@ -178,7 +178,7 @@ resource "azurerm_network_security_group" "sg" {
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
-    name                       = "Required_Packages"
+    name                       = "DNS_53"
     priority                   = 1043
     direction                  = "Outbound"
     access                     = "Allow"
@@ -188,7 +188,7 @@ resource "azurerm_network_security_group" "sg" {
     destination_address_prefix = "Internet.UkSouth"
   }
   security_rule {
-    name                       = "Required_Packages"
+    name                       = "Deny_All"
     priority                   = 4096
     direction                  = "Outbound"
     access                     = "Deny"
