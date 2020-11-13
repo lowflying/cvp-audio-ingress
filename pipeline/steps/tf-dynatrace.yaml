@@ -1,0 +1,47 @@
+parameters:
+  - name: subscriptionName
+    type: string
+  - name: env
+    type: string
+  - name: location
+    type: string
+  - name: product
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: Deploy Dynatrace
+    inputs:
+      azureSubscription: '${{ parameters.subscriptionName }}'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        rgName="${{ parameters.product }}-recordings-${{ parameters.env }}-rg"
+        rgNameCom="${{ parameters.product }}-recordings-${{ parameters.env }}"
+        kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
+        dtToken=$(az keyvault secret show --id https://$kvName.vault.azure.net/secrets/$(dynatrace_token) | jq ".value" | sed -e 's/"//g')
+        # delete ext for vm1
+        az vm extension delete --subscription ${{ parameters.subscriptionName }} -g $rgName --vm-name $rgNameCom-vm1 -n oneAgentLinux || true
+        # deploy to vm1 
+        az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName }} --resource-group $rgName --vm-name $rgNameCom-vm1 --settings '{"tenantId":"$(dynatrace_id)","token": "'$dtToken'","hostGroup":"$(dynatrace_host_group)","networkZone":"$(dynatrace_network_zone)","enableLogAnalytics":"yes"}'
+        # delete ext for vm2
+        az vm extension delete --subscription ${{ parameters.subscriptionName }} -g $rgName --vm-name $rgNameCom-vm2 -n oneAgentLinux || true
+        # deploy to vm2
+        az vm extension set --publisher dynatrace.ruxit --name oneAgentLinux --subscription ${{ parameters.subscriptionName }} --resource-group $rgName --vm-name $rgNameCom-vm2 --settings '{"tenantId":"$(dynatrace_id)","token": "'$dtToken'","hostGroup":"$(dynatrace_host_group)","networkZone":"$(dynatrace_network_zone)","enableLogAnalytics":"yes"}'
+
+  - task: AzureCLI@2
+    condition: always()
+    displayName: Remove Build Agent IP from KV whitelist
+    inputs:
+      azureSubscription: '${{ parameters.subscriptionName }}'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        agentIp=$(curl http://ifconfig.me/ip)/32
+        echo "Removing agent ip $agentIp from KV"
+        rgName="${{ parameters.product }}-sharedinfra-${{ parameters.env }}"
+        kvName="${{ parameters.product }}-${{ parameters.env }}-kv"
+        az keyvault network-rule remove \
+          --resource-group $rgName \
+          --name $kvName \
+          --ip-address $agentIp

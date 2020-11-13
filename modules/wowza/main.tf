@@ -18,6 +18,7 @@ resource "azurerm_storage_account" "sa" {
   account_tier              = var.sa_account_tier
   account_replication_type  = var.sa_account_replication_type
   enable_https_traffic_only = true
+  min_tls_version           = "TLS1_2"
   blob_properties {
     delete_retention_policy {
       days = 365
@@ -107,16 +108,6 @@ resource "azurerm_private_dns_a_record" "sa_a_record" {
   records             = [azurerm_private_endpoint.endpoint.private_service_connection.0.private_ip_address]
 }
 
-# resource "azurerm_storage_account_network_rules" "wowza" {
-#   resource_group_name  = azurerm_resource_group.rg.name
-#   storage_account_name = azurerm_storage_account.sa.name
-
-#   default_action             = "Deny"
-#   ip_rules                   = []
-#   virtual_network_subnet_ids = []
-#   bypass                     = ["Logging", "AzureServices"]
-# }
-
 resource "azurerm_public_ip" "pip" {
   name = "${local.service_name}-pip"
 
@@ -153,6 +144,7 @@ resource "azurerm_network_security_group" "sg" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
+  #ingress rules
   security_rule {
     name                       = "RTMPS"
     priority                   = 1040
@@ -162,6 +154,73 @@ resource "azurerm_network_security_group" "sg" {
     source_port_range          = "*"
     destination_port_range     = "443"
     source_address_prefixes    = var.rtmps_source_address_prefixes
+    destination_address_prefix = "*"
+  }
+  #egress rules 
+  security_rule {
+    name                       = "Required_Packages_443"
+    priority                   = 1041
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "Internet"
+  }
+  security_rule {
+    name                       = "Required_Packages_80"
+    priority                   = 1042
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "Internet"
+  }
+  security_rule {
+    name                       = "DNS_53"
+    priority                   = 1043
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Udp"
+    source_port_range          = "*"
+    destination_port_range     = "53"
+    source_address_prefix      = "*"
+    destination_address_prefix = "Internet"
+  }
+  security_rule {
+    name                       = "Sftp"
+    priority                   = 1044
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "Internet"
+  }
+  security_rule {
+    name                       = "VNet"
+    priority                   = 1045
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "VirtualNetwork"
+  }
+  security_rule {
+    name                       = "Deny_All"
+    priority                   = 4096
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 }
