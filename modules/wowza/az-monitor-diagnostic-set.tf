@@ -44,21 +44,21 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-kv-diag-set" {
 //  }
 // }
 
-// resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
-//  name               = "cvp-sa-${var.env}-diag-set"
-//  target_resource_id = azurerm_storage_account.sa.id
-//  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
+resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
+ name               = "cvp-sa-${var.env}-diag-set"
+ target_resource_id = azurerm_storage_account.sa.id
+ log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
 
-//  metric {
-//    category = "Capacity"
-//    enabled  = true
-//  }
-//  metric {
+ metric {
+   category = "Capacity"
+   enabled  = true
+ }
+ metric {
 
-//    category = "Transaction"
-//    enabled  = true
-//  }
-// }
+   category = "Transaction"
+   enabled  = true
+ }
+}
 
 resource "azurerm_monitor_diagnostic_setting" "cvp-pip-diag-set" {
   name               = "cvp-pip-${var.env}-diag-set"
