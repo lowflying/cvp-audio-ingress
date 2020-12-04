@@ -189,11 +189,6 @@ write_files:
                                                       <RequestFilters>*jwplayer.rss|*jwplayer.smil|*medialist.smil|*manifest-rtmp.f4m</RequestFilters>
                                                       <AuthenticationMethod>none</AuthenticationMethod>
                                               </HTTPProvider>
-                                              <HTTPProvider>
-                                                      <BaseClass>com.wowza.wms.http.HTTPServerVersion</BaseClass>
-                                                      <RequestFilters>*</RequestFilters>
-                                                      <AuthenticationMethod>none</AuthenticationMethod>
-                                              </HTTPProvider>
                                       </HTTPProviders>
                               </HostPort>
                               <HostPort>
@@ -247,11 +242,6 @@ write_files:
                                                       <BaseClass>com.wowza.wms.livestreamrecord.http.HTTPLiveStreamRecord</BaseClass>
                                                       <RequestFilters>livestreamrecord*</RequestFilters>
                                                       <AuthenticationMethod>admin-digest</AuthenticationMethod>
-                                              </HTTPProvider>
-                                              <HTTPProvider>
-                                                      <BaseClass>com.wowza.wms.http.HTTPServerVersion</BaseClass>
-                                                      <RequestFilters>*</RequestFilters>
-                                                      <AuthenticationMethod>none</AuthenticationMethod>
                                               </HTTPProvider>
                                       </HTTPProviders>
                               </HostPort>
