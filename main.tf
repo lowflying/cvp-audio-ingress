@@ -34,5 +34,5 @@ resource "azurerm_dns_a_record" "wowza" {
   zone_name           = var.dns_zone_name
   resource_group_name = var.dns_resource_group
   ttl                 = 300
-  records             = var.lb_IPaddress
+  records             = [var.lb_IPaddress]
 }
