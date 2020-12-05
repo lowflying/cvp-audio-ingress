@@ -60,32 +60,6 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
  }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "cvp-pip-diag-set" {
-  name               = "cvp-pip-${var.env}-diag-set"
-  target_resource_id = azurerm_public_ip.pip.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics.id
-
-  log {
-    category = "DDoSProtectionNotifications"
-    enabled  = true
-  }
-
-  log {
-    category = "DDoSMitigationFlowLogs"
-    enabled  = true
-  }
-
-  log {
-    category = "DDoSMitigationReports"
-    enabled  = true
-  }
-
-  metric {
-    category = "AllMetrics"
-    enabled  = true
-  }
-}
-
 resource "azurerm_monitor_diagnostic_setting" "cvp-pipvm1-diag-set" {
   name               = "cvp-pipvm1-${var.env}-diag-set"
   target_resource_id = azurerm_public_ip.pip_vm1.id
