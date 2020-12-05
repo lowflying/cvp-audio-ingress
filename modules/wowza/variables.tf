@@ -108,6 +108,10 @@ variable "wowza_sku" {
   type = string
 }
 
+variable "lbIPaddress" {
+  type = string
+}
+
 variable "ssh_public_key" {
   type = string
 }

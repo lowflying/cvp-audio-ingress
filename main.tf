@@ -14,6 +14,7 @@ module "wowza" {
   service_certificate_kv_url    = var.service_certificate_kv_url
   key_vault_id                  = var.key_vault_id
   address_space                 = var.address_space
+  lbIPaddress                   = var.lbIPaddress
   num_applications              = var.num_applications
   cert_path                     = var.cert_path
   thumbprint                    = var.thumbprint
@@ -33,5 +34,5 @@ resource "azurerm_dns_a_record" "wowza" {
   zone_name           = var.dns_zone_name
   resource_group_name = var.dns_resource_group
   ttl                 = 300
-  records             = [module.wowza.lb_pip]
+  records             = var.lbIPaddress
 }
