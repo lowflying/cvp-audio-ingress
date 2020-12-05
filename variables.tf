@@ -44,6 +44,10 @@ variable "address_space" {
   type = string
 }
 
+variable "lbIPaddress" {
+  type = string
+}
+
 variable "cert_path" {
   type = string
 }
