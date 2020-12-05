@@ -251,7 +251,7 @@ resource "azurerm_lb" "lb" {
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress"
-    private_ip_address   = var.lbIPaddress
+    private_ip_address   = var.lb_IPaddress
   }
 }
 

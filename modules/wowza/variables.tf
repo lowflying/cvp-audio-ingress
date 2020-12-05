@@ -108,7 +108,7 @@ variable "wowza_sku" {
   type = string
 }
 
-variable "lbIPaddress" {
+variable "lb_IPaddress" {
   type = string
 }
 
