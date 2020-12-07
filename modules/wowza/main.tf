@@ -251,6 +251,7 @@ resource "azurerm_lb" "lb" {
 
   frontend_ip_configuration {
     name                          = "PrivateIPAddress"
+    subnet_id                     = azurerm_subnet.sn.id
     private_ip_address            = var.lb_IPaddress
     private_ip_address_allocation = "Static"
   }
