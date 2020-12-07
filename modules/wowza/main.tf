@@ -250,8 +250,9 @@ resource "azurerm_lb" "lb" {
   sku                 = "Standard"
 
   frontend_ip_configuration {
-    name                 = "PrivateIPAddress"
-    private_ip_address   = var.lb_IPaddress
+    name                          = "PrivateIPAddress"
+    private_ip_address            = var.lb_IPaddress
+    private_ip_address_allocation = "Static"
   }
 }
 
