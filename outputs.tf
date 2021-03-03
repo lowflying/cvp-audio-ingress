@@ -8,7 +8,7 @@ output "stream_password" {
   value       = module.wowza.stream_password
 }
 
-output "lb_pip" {
-  description = "Public IP for LB - This needs to be added to https://github.com/hmcts/azure-public-dns"
-  value       = module.wowza.lb_pip
-}
+# output "lb_pip" {
+#   description = "Public IP for LB - This needs to be added to https://github.com/hmcts/azure-public-dns"
+#   value       = module.wowza.lb_pip
+# }
