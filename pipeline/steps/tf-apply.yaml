@@ -31,7 +31,7 @@ steps:
     inputs:
       command: 'apply'
       environmentServiceName: ${{ parameters.subscriptionName }}
-      commandOptions: '${{ parameters.env }}.tfplan -no-color'
+      commandOptions: '-target module.wowza.azurerm_lb.lb -target module.wowza.azurerm_lb_backend_address_pool.be_add_pool -target module.wowza.azurerm_lb_probe.lb_probe -target module.wowza.azurerm_lb_rule.rtmps_lb_rule -target module.wowza.azurerm_network_interface_backend_address_pool_association.be_add_pool_assoc_vm1 -target module.wowza.azurerm_network_interface_backend_address_pool_association.be_add_pool_assoc_vm2 ${{ parameters.env }}.tfplan -no-color'
 
   # - task: AzureCLI@2
   #   displayName: 'Enable Logging'
