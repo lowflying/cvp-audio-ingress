@@ -67,12 +67,6 @@ stages:
               location: $(location)
               product: $(product)
 
-          - task: ManualValidation@0
-            timeoutInMinutes: 1440 # task times out in 1 day
-            inputs:
-              instructions: 'Please validate the plan output and resume'
-              onTimeout: 'reject'
-
           - template: pipeline/steps/tf-apply.yaml
             parameters:
               subscriptionName: $(subscriptionName)
