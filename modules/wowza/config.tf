@@ -1,8 +1,8 @@
 locals {
   common_tags = {
-    "managedBy"          = "Cloud Video Platform"
+    "managedBy"          = "Reform Video Hearings"
     "solutionOwner"      = ""
-    "activityName"       = "CVP"
+    "activityName"       = "VH"
     "dataClassification" = "Internal"
     "automation"         = "terraform"
     "costCentre"         = "10245117" // until we get a better one, this is the generic cft contingency one

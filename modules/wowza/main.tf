@@ -108,6 +108,16 @@ resource "azurerm_private_dns_a_record" "sa_a_record" {
   records             = [azurerm_private_endpoint.endpoint.private_service_connection.0.private_ip_address]
 }
 
+resource "azurerm_public_ip" "pip" {
+  name = "${local.service_name}-pip"
+
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  allocation_method = "Static"
+  sku               = "Standard"
+}
+
 resource "azurerm_public_ip" "pip_vm1" {
   name = "${local.service_name}-pipvm1"
 
@@ -250,10 +260,8 @@ resource "azurerm_lb" "lb" {
   sku                 = "Standard"
 
   frontend_ip_configuration {
-    name                          = "PrivateIPAddress"
-    subnet_id                     = azurerm_subnet.sn.id
-    private_ip_address            = var.lb_IPaddress
-    private_ip_address_allocation = "Static"
+    name                 = "PublicIPAddress"
+    public_ip_address_id = azurerm_public_ip.pip.id
   }
 }
 

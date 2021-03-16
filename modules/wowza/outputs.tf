@@ -13,7 +13,7 @@ output "stream_password" {
   value       = random_password.streamPassword.result
 }
 
-// output "lb_pip" {
-//   description = "Public IP for LB - This needs to be added to https://github.com/hmcts/azure-public-dns"
-//   value       = azurerm_private_ip.pip.ip_address
-// }
+output "lb_pip" {
+  description = "Public IP for LB - This needs to be added to https://github.com/hmcts/azure-public-dns"
+  value       = azurerm_public_ip.pip.ip_address
+}
