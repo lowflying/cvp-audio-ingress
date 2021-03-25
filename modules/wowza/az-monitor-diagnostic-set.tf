@@ -6,11 +6,6 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-kv-diag-set" {
   log {
     category = "AuditEvent"
     enabled  = false
-
-    retention_policy {
-      enabled = true
-      days    = 90
-    }
   }
 
   metric {
@@ -21,6 +16,7 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-kv-diag-set" {
     }
   }
 }
+
 
 // resource "azurerm_monitor_diagnostic_setting" "cvp-vm1-diag-set" {
 //  name               = "cvp-vm1-${var.env}-diag-set"
@@ -52,11 +48,19 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-sa-diag-set" {
  metric {
    category = "Capacity"
    enabled  = true
+  
+  retention_policy {
+      enabled = false
+    }
  }
  metric {
 
    category = "Transaction"
    enabled  = true
+   
+  retention_policy {
+      enabled = false
+    }
  }
 }
 
@@ -158,15 +162,27 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-lb-diag-set" {
   log {
     category = "LoadBalancerAlertEvent"
     enabled  = true
+
+  retention_policy {
+      enabled = false
+    }
   }
 
   log {
     category = "LoadBalancerProbeHealthStatus"
     enabled  = true
+  
+  retention_policy {
+      enabled = false
+    }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = true
+
+  retention_policy {
+      enabled = false
+    }
   }
 }
