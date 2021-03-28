@@ -77,21 +77,37 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-pipvm1-diag-set" {
   log {
     category = "DDoSProtectionNotifications"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 
   log {
     category = "DDoSMitigationFlowLogs"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 
   log {
     category = "DDoSMitigationReports"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 }
 
@@ -103,21 +119,37 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-pipvm2-diag-set" {
   log {
     category = "DDoSProtectionNotifications"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 
   log {
     category = "DDoSMitigationFlowLogs"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 
   log {
     category = "DDoSMitigationReports"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 }
 
@@ -129,11 +161,19 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-nsg-diag-set" {
   log {
     category = "NetworkSecurityGroupEvent"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 
   log {
     category = "NetworkSecurityGroupRuleCounter"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
   }
 }
 
@@ -145,6 +185,10 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-nic1-diag-set" {
   metric {
     category = "AllMetrics"
     enabled  = true
+    retention_policy {
+        days    = 0
+        enabled = false
+    }
   }
 }
 
@@ -156,7 +200,11 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-nic2-diag-set" {
   metric {
     category = "AllMetrics"
     enabled  = true
-  }
+    retention_policy {
+        days    = 0
+        enabled = false
+      }
+    }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cvp-lb-diag-set" {
