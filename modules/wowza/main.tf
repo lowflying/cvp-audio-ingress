@@ -1,5 +1,5 @@
 locals {
-  service_name  = "${var.product}-recordings-${var.env}"
+  service_name = "${var.product}-recordings-${var.env}"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -9,10 +9,10 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_storage_account" "sa" {
-  name                = "${replace(lower(local.service_name), "-", "")}sa"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  tags                = var.common_tags
+  name                      = "${replace(lower(local.service_name), "-", "")}sa"
+  resource_group_name       = azurerm_resource_group.rg.name
+  location                  = azurerm_resource_group.rg.location
+  tags                      = var.common_tags
   access_tier               = var.sa_access_tier
   account_kind              = var.sa_account_kind
   account_tier              = var.sa_account_tier

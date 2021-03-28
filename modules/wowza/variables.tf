@@ -121,7 +121,7 @@ variable "rtmps_source_address_prefixes" {
 }
 
 variable "ws_name" {
-  type    = string
+  type = string
 }
 
 variable "ws_rg" {
