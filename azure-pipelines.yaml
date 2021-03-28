@@ -67,14 +67,14 @@ stages:
               location: $(location)
               product: $(product)
 
-          #- template: pipeline/steps/tf-apply.yaml
-            #parameters:
-              #subscriptionName: $(subscriptionName)
-              #env: $(env)
+          - template: pipeline/steps/tf-apply.yaml
+            parameters:
+              subscriptionName: $(subscriptionName)
+              env: $(env)
           
-          #- template: pipeline/steps/tf-dynatrace.yaml
-            #parameters:
-              #subscriptionName: $(subscriptionName)
-              #env: $(env)
-              #location: $(location)
-              #product: $(product)
+          - template: pipeline/steps/tf-dynatrace.yaml
+            parameters:
+              subscriptionName: $(subscriptionName)
+              env: $(env)
+              location: $(location)
+              product: $(product)
