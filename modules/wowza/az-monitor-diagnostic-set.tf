@@ -6,6 +6,11 @@ resource "azurerm_monitor_diagnostic_setting" "cvp-kv-diag-set" {
   log {
     category = "AuditEvent"
     enabled  = false
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
   }
 
   metric {
