@@ -65,7 +65,7 @@ resource "azurerm_subnet" "sn" {
   name                 = "wowza"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefix       = var.address_space
+  address_prefixes       = var.address_space
   service_endpoints    = ["Microsoft.KeyVault"]
 
   enforce_private_link_endpoint_network_policies = true
